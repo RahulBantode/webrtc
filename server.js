@@ -14,11 +14,11 @@ const io = require("socket.io")(http);
 //socket class object creation and 
 //passing of the io object which consiste the socket.io 
 const socket = new socketHandler(io);
-socket.socketconnection();
+socket.init();
 
 
 http.listen(port,()=>{
     console.log(`server is listening on = localhost:${port}/`);
-})
+});
 
 
