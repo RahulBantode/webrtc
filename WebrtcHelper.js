@@ -22,8 +22,11 @@ class WebrtcHelper
             }
         }
 
-        //socket.to(messege.meetingId).emit("messege",emit); //
-        socket.broadcast.emit("message",emitResponse);
+        if(messege.meetingId)
+        {
+            //socket.to(messege.meetingId).emit("messege",emit); //
+            socket.broadcast.emit("message",emitResponse);
+        }
     }
 
     /*===========================================================================================
@@ -47,7 +50,10 @@ class WebrtcHelper
             }
         }
 
-        socket.broadcast.emit("message",emitResponse);
+        if(messege.meetingId)
+        {
+            socket.broadcast.emit("message",emitResponse);
+        }    
     }
 }
 
