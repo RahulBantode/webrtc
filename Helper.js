@@ -4,6 +4,7 @@ class Helper
 {
 
     constructor()
+    
     {
         this.cacheObj = new SessionsCache();
     }
@@ -89,7 +90,7 @@ class Helper
              
             //to send the messege to all the clients inside the room broadcast event is used.
             
-            socket.broadcast.emit("messege",chatReply);
+            socket.broadcast.emit("message",chatReply.data);
             
         }
 
