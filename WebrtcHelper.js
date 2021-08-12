@@ -56,6 +56,33 @@ class WebrtcHelper
             socket.broadcast.emit("message",emitResponse);
         }    
     }
+    
+    /*===========================================================================================
+        function - handleSdpOfferRequest()
+        class - WebrtcHelper
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this handle the request (SDP) which comes from agent to all the client.
+    ==============================================================================================*/
+    handleSdpOfferRequest(messege,socket,io)
+    {
+        const sdpOffer = 
+        {
+            type : "_SDP_OFFER",
+            data : 
+            {
+                meetingId : messege.meetingId,
+                userId  : messege.userId,
+                callstatus : messege.callStatus,
+                userName : messege.userName
+            }
+        }
+
+        if(messege.meetingId)
+        {
+            socket.broadcast.emit("message",sdpOffer);
+        }
+    }
 }
 
 module.exports = WebrtcHelper;
