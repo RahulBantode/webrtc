@@ -46,7 +46,8 @@ class WebrtcHelper
             {
                 meetingId : messege.meetingId,
                 userId : messege.userId,
-                callStatus :  messege.callStatus
+                callStatus :  messege.callStatus,
+                userName  : messege.userName
             }
         }
 
