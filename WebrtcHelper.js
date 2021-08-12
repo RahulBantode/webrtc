@@ -56,7 +56,7 @@ class WebrtcHelper
             socket.broadcast.emit("message",emitResponse);
         }    
     }
-    
+
     /*===========================================================================================
         function - handleSdpOfferRequest()
         class - WebrtcHelper
@@ -73,14 +73,51 @@ class WebrtcHelper
             {
                 meetingId : messege.meetingId,
                 userId  : messege.userId,
-                sdpOffer : messege.sdpOffer,
-                userName : messege.userName
+                userName : messege.userName,
+                sdpOffer : messege.sdpOffer
             }
         }
 
         if(messege.meetingId)
         {
             socket.broadcast.emit("message",sdpOffer);
+        }
+    }
+
+    handleSdpAnswer(messege,socket,io)
+    {
+        const sdpAnswer = 
+        {
+            type : "_SDP_ANSWER",
+            data :
+            {
+                meetingId : messege.meetingId,
+                userId  : messege.userId,
+                userName : messege.userName,
+                sdpAnswer : messege.sdpAnswer
+            }
+        }
+
+        
+        if(messege.meetingId)
+        {
+            socket.broadcast.emit("message",sdpAnswer);
+        }
+    }
+
+    handleIceCandidateRequest(messege,socket,io)
+    {
+        const iceCandidate = 
+        {
+            meetingId : messege.meetingId,
+            userId  : messege.userId,
+            userName : messege.userName,
+            iceCandidate : messege.iceCandidate
+        }
+
+        if(messege.meetingId)
+        {
+            socket.broadcast.emit("message",iceCandidate);
         }
     }
 }
