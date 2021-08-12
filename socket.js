@@ -47,6 +47,10 @@ class socketHandler
                         this.webrtcobj.handleCallResponse(msg.data,socket,this.io);
                         break; 
                         
+                   case 'SDP_OFFER':
+                        this.webrtcobj.handleSdpOfferRequest(msg.data,socket,this.io);
+                        break;
+                        
                     default: 
                         console.log("Invalid selection of case "); 
                         break;
