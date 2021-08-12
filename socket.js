@@ -46,11 +46,19 @@ class socketHandler
                     case 'CALL_RESPONSE':
                         this.webrtcobj.handleCallResponse(msg.data,socket,this.io);
                         break; 
-                        
-                   case 'SDP_OFFER':
+                    
+                    case 'SDP_OFFER':
                         this.webrtcobj.handleSdpOfferRequest(msg.data,socket,this.io);
                         break;
-                        
+
+                    case 'SDP_ANSWER':
+                        this.webrtcobj.handleSdpAnswer(msg.data,socket,this.io);
+                        break;
+
+                    case 'ICE_CANDIDATE':
+                        this.webrtcobj.handleIceCandidateRequest(msg.data.socket,this.io);
+                        break;
+
                     default: 
                         console.log("Invalid selection of case "); 
                         break;
@@ -70,6 +78,13 @@ class socketHandler
 
 
 module.exports = socketHandler;
+
+
+
+
+
+
+
 
 
 
