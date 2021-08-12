@@ -1,24 +1,53 @@
 class WebrtcHelper
 {
+    /*===========================================================================================
+        function - handleCallRequest()
+        class -WebrtcHelper
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this handle the request of call comes from agent to all the clients
+                         with getingusermedia
+    ==============================================================================================*/
     handleCallRequest(messege,socket,io)
     {
 
-        emit = 
+        const emitResponse = 
         {
             type : '_CALL_REQUEST',
             data : 
             {
                 meetingId : messege.meetingId,
+                userName  : messege.userName,
                 userId : messege.userId
             }
         }
 
-        socket.to(messege.meetingId).emit("messege",emit);
-        
-        //if vrchi method work nahi jhali tr hi use kr 
-        //
-        //------))))
-        //socket.broadcast.emit("messege",emit);
+        //socket.to(messege.meetingId).emit("messege",emit); //
+        socket.broadcast.emit("message",emitResponse);
+    }
+
+    /*===========================================================================================
+        function - handleCallResponse()
+        class - WebrtcHelper
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this handle the response from all the clients if they taking call or not
+                         and response send back to the agent.
+    ==============================================================================================*/
+    handleCallResponse(messege,socket,io)
+    {
+        const emitResponse = 
+        {
+            type : "_CALL_RESPONSE",
+            data : 
+            {
+                meetingId : messege.meetingId,
+                userId : messege.userId,
+                accepted : messege.accepted
+            }
+        }
+
+        socket.broadcast.emit("message",emitResponse);
     }
 }
 
