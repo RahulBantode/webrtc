@@ -1,3 +1,4 @@
+
 const Helper = require("./Helper");  //It having the handler for chatting and joining the users.
 const SessionsCache = require("./sessionCache"); //It maintain the log of the users and its messeges.
 const WebrtcHelper = require("./WebrtcHelper");  //It having the function of wwebrtc requests.
@@ -38,10 +39,14 @@ class socketHandler
                         this.HelperObj.handleChatMsg(msg.data, socket, this.io);
                         break;
 
-                    case 'CHAT_REQUEST':
+                    case 'CALL_REQUEST':
                         this.webrtcobj.handleCallRequest(msg.data,socket,this.io);
                         break;
-    
+                    
+                    case 'CALL_RESPONSE':
+                        this.webrtcobj.handleCallResponse(msg.data,socket,this.io);
+                        break; 
+                        
                     default: 
                         console.log("Invalid selection of case "); 
                         break;
@@ -61,7 +66,6 @@ class socketHandler
 
 
 module.exports = socketHandler;
-
 
 
 
