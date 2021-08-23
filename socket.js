@@ -1,7 +1,8 @@
-
 const Helper = require("./Helper");  //It having the handler for chatting and joining the users.
 const SessionsCache = require("./sessionCache"); //It maintain the log of the users and its messeges.
 const WebrtcHelper = require("./WebrtcHelper");  //It having the function of wwebrtc requests.
+const KmsWebrtcHelper = require("./KmsWebrtcHelper"); //Its having the function of kmswebrtc requests.
+const { Socket } = require("socket.io");
 
 class socketHandler 
 {
@@ -9,6 +10,7 @@ class socketHandler
     HelperObj;
     cacheObj;
     webrtcobj;
+    kmswebrtcobj;
 
     constructor(io)
     {
@@ -16,6 +18,7 @@ class socketHandler
         this.HelperObj = new Helper();
         this.cacheObj = new SessionsCache();
         this.webrtcobj = new WebrtcHelper();
+        this.kmswebrtcobj = new KmsWebrtcHelper();
     }
 
     
@@ -29,7 +32,8 @@ class socketHandler
             console.log("Socket connection established");
     
             socket.on("message", (msg) => {
-                switch (msg.type) {
+                switch (msg.type) 
+                {
                     case 'JOIN':
                         this.HelperObj.handleJoinMsg(msg.data, socket, this.io);
                         this.cacheObj.displayUsers(); //its for check whether function working or not.
@@ -39,6 +43,7 @@ class socketHandler
                         this.HelperObj.handleChatMsg(msg.data, socket, this.io);
                         break;
 
+                        
                     case 'CALL_REQUEST':
                         this.webrtcobj.handleCallRequest(msg.data,socket,this.io);
                         break;
@@ -59,6 +64,13 @@ class socketHandler
                         this.webrtcobj.handleIceCandidateRequest(msg.data.socket,this.io);
                         break;
 
+                    case 'KMS_CALL_REQUEST':
+                        this.kmswebrtcobj.handleKmsCallRequest(msg.data,socket,this.io);
+                        break;
+
+                    case 'KMS_CALL_RESPONSE':
+                        this.kmswebrtcobj.handleCallResponse(msg.data,socket,this.io);
+
                     default: 
                         console.log("Invalid selection of case "); 
                         break;
@@ -78,12 +90,6 @@ class socketHandler
 
 
 module.exports = socketHandler;
-
-
-
-
-
-
 
 
 

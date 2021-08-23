@@ -105,20 +105,21 @@ class WebrtcHelper
         }
     }
 
-    handleIceCandidateRequest(messege,socket,io)
+    handleIceCandidateRequest(message,socket,io)
     {
         const iceCandidate = 
         {
-            meetingId : messege.meetingId,
-            userId  : messege.userId,
-            userName : messege.userName,
-            iceCandidate : messege.iceCandidate
+            type : "_ICE_CANDIDATE",
+            data : 
+            {
+                //meetingId : message.meetingId,
+                userId  : message.userId,
+                userName : message.userName,
+                iceCandidate : message.iceCandidate
+            }
         }
 
-        if(messege.meetingId)
-        {
-            socket.broadcast.emit("message",iceCandidate);
-        }
+        socket.broadcast.emit("message",iceCandidate);
     }
 }
 

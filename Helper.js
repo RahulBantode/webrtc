@@ -1,12 +1,12 @@
 const SessionsCache = require("./sessionCache");
 
+
 class Helper
 {
-
     constructor()
-    
     {
         this.cacheObj = new SessionsCache();
+      
     }
 
     //this function responsible for handling the join event.
@@ -83,14 +83,28 @@ class Helper
              functionality :-  It will push that object into the userMesseges array.
           ===========================================================================*/
         this.cacheObj.getUsersChat(chatReply.data);
+        
+        let userList = this.cacheObj.getArray();
 
+        let arrayLength = userList.length;
         if(chatMessage.meetingId)
         {
-            console.log("The messege is : ",chatReply);
+            for(var icnt=0; icnt < arrayLength; icnt++)
+            {
+                if(icnt != 0)
+                {
+                    let userId = userList[icnt].userId;
+                    //console.log(userId);
+                    socket.broadcast.to(userId).emit("message",chatReply.data);
+                }
+
+            }
+ 
+            //console.log("The messege is : ",chatReply);
              
             //to send the messege to all the clients inside the room broadcast event is used.
             
-            socket.broadcast.emit("message",chatReply.data);
+            //socket.broadcast.emit("message",chatReply.data);
             
         }
 

@@ -22,7 +22,11 @@ class SessionsCache
     {
         console.log(userList);
     }
+
+    getArray()
+    {
+        return userList;
+    }
 }
 
 module.exports = SessionsCache;
-
