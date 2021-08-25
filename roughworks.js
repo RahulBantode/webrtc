@@ -1,11 +1,73 @@
-class session
-{   
 
-    handler(meetingId,userId)
+sessionStore = {}
+let meetingId = 122;
+let userId = 1
+let meetingStore = {};
+
+
+sessionStore[meetingId] = meetingStore;
+//sessionStore[meetingId][userId] = 101;
+let userDetails = {}
+sessionStore[meetingId][userId] = userDetails;
+
+userDetails.userName = "Rahul"
+userDetails.sdpOffer = "asdkjflksjdlkrtejoiwjr"
+
+console.log(sessionStore);
+
+
+console.log("=============================================================")
+sessionStore[meetingId][userId].webrtcendpoint = "enddddpoints";
+console.log(sessionStore)
+
+let userDetail = {};
+let userI = 2;
+sessionStore[meetingId][userI] = userDetail;
+userDetail.userName = "Bantode"
+userDetail.sdpOffer = "fdjkshrjkhjkeh"
+userDetail.webrtcendpoint = "kkkwwww"
+sessionStore[meetingId].pipeline = "webrtcPipeline"
+
+console.log(sessionStore);
+
+
+
+Object.keys(sessionStore[meetingId]).forEach(key =>{
+    if(key != "pipeline")
+        console.log(key)
+})
+
+
+console.log(Object.keys(sessionStore[meetingId]));
+
+
+console.log(sessionStore[meetingId][userI].userName);
+/*
+const obj = 
+{
+    meetingId:"",
+    names:"",
+    id :
     {
+        username : "Rahul",
+        surname : "BaNtode"
+    }
+}
+
+obj.meetingId = 123;
+obj.names = "Rahul";
+obj.id = 100;
+
+console.log(obj.meetingId);
+console.log(obj.names);
+console.log(typeof(obj.meetingId));
+console.log(obj.id);
+*/
+/*
+
         //meetingId = 123;
         //userId = 10;
-        const obj = 
+        var obj = 
         {
             meetingId : 
             {
@@ -32,13 +94,7 @@ class session
         console.log(obj.meetingId.userId);
         console.log("----------------------------")
         console.log(obj.meetingId.userId.iceCandidate.length);
-    }
-}
-
-
-const obj = new session();
-obj.handler(123,10);
-
+*/
 /*
 [12:51] Karan Anantpure
     

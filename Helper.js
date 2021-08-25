@@ -3,9 +3,10 @@ const SessionsCache = require("./sessionCache");
 
 class Helper
 {
+    sessioncache;
     constructor()
     {
-        this.cacheObj = new SessionsCache();
+        this.sessionCache = new SessionsCache();
       
     }
 
@@ -44,8 +45,7 @@ class Helper
              parameter     :-  takes the one parameter as object
              functionality :-  It will push that object into the userList array
           ===========================================================================*/
-          this.cacheObj.getUserData(user);
-
+          this.sessionCache.setUserData(user);
 
           roomClients = io.sockets.adapter.rooms.get(message.meetingId);
           numberOfClients = roomClients ? roomClients.size : 0;
@@ -82,10 +82,9 @@ class Helper
              parameter     :-  takes the one parameter as object (which contains chat of users)
              functionality :-  It will push that object into the userMesseges array.
           ===========================================================================*/
-        this.cacheObj.getUsersChat(chatReply.data);
+          this.sessionCache.setUsersChat(chatReply.data);
         
-        let userList = this.cacheObj.getArray();
-
+        let userList = this.sessionCache.getArray();
         let arrayLength = userList.length;
         if(chatMessage.meetingId)
         {

@@ -1,7 +1,7 @@
 const Helper = require("./Helper");  //It having the handler for chatting and joining the users.
 const SessionsCache = require("./sessionCache"); //It maintain the log of the users and its messeges.
-const WebrtcHelper = require("./WebrtcHelper");  //It having the function of wwebrtc requests.
-const KmsWebrtcHelper = require("./KmsWebrtcHelper"); //Its having the function of kmswebrtc requests.
+const WebrtcMessageHandler = require("./WebrtcMessageHandler");  //It having the function of wwebrtc requests.
+const KmsWebrtcMessageHandler = require("./KmsWebrtcMessageHandler"); //Its having the function of kmswebrtc requests.
 const { Socket } = require("socket.io");
 
 class socketHandler 
@@ -9,16 +9,16 @@ class socketHandler
     io;
     HelperObj;
     cacheObj;
-    webrtcobj;
-    kmswebrtcobj;
+    webrtcMessageHandler;
+    kmsWebrtcMessageHandler;
 
     constructor(io)
     {
         this.io = io;
         this.HelperObj = new Helper();
         this.cacheObj = new SessionsCache();
-        this.webrtcobj = new WebrtcHelper();
-        this.kmswebrtcobj = new KmsWebrtcHelper();
+        this.webrtcMessageHandler = new WebrtcMessageHandler();
+        this.kmsWebrtcMessageHandler = new KmsWebrtcMessageHandler();
     }
 
     
@@ -45,31 +45,31 @@ class socketHandler
 
                         
                     case 'CALL_REQUEST':
-                        this.webrtcobj.handleCallRequest(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleCallRequest(msg.data,socket,this.io);
                         break;
                     
                     case 'CALL_RESPONSE':
-                        this.webrtcobj.handleCallResponse(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleCallResponse(msg.data,socket,this.io);
                         break; 
                     
                     case 'SDP_OFFER':
-                        this.webrtcobj.handleSdpOfferRequest(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleSdpOfferRequest(msg.data,socket,this.io);
                         break;
 
                     case 'SDP_ANSWER':
-                        this.webrtcobj.handleSdpAnswer(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleSdpAnswer(msg.data,socket,this.io);
                         break;
 
                     case 'ICE_CANDIDATE':
-                        this.webrtcobj.handleIceCandidateRequest(msg.data.socket,this.io);
+                        this.webrtcMessageHandler.handleIceCandidateRequest(msg.data.socket,this.io);
                         break;
 
                     case 'KMS_CALL_REQUEST':
-                        this.kmswebrtcobj.handleKmsCallRequest(msg.data,socket,this.io);
+                        this.kmsWebrtcMessageHandler.handleKmsCallRequest(msg.data,socket,this.io);
                         break;
 
                     case 'KMS_CALL_RESPONSE':
-                        this.kmswebrtcobj.handleCallResponse(msg.data,socket,this.io);
+                        this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data,socket,this.io);
 
                     default: 
                         console.log("Invalid selection of case "); 
