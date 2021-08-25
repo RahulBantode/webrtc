@@ -3,20 +3,16 @@ const kurento = require("kurento-client");
 const SessionCache = require("./sessionCache");
 
 
-class KmsPipeline
-{
+class KmsPipeline {
     sessionCache;
-    constructor()
-    {
+    constructor() {
         this.sessionCache = new SessionCache();
     }
     //this function responsible for creating the communication between kms and server.
-    getKurentoClient(callback)
-    {
+    getKurentoClient(callback) {
         const mediaServerUrl = "ws://127.0.0.1:8888/kurento";
-        kurento(mediaServerUrl,function(error,kurentoClient){
-            if(error)
-            {
+        kurento(mediaServerUrl, function (error, kurentoClient) {
+            if (error) {
                 var messege = "couldn't find the media server at address : " + mediaServerUrl;
                 return callback(messege);
             }
@@ -26,34 +22,34 @@ class KmsPipeline
     }
 
     //this function responsible for creating the pipeline over the kms
-    createPipeline(){
+    createPipeline() {
         let mediaPipeline = "";
 
-        this.getKurentoClient(function(error,kurentoClient){
-            if(error){
+        this.getKurentoClient(function (error, kurentoClient) {
+            if (error) {
                 console.log(error);
             }
 
-            kurentoClient.create('MediaPipeline',function(error,pipeline){
-                if(error){
-                    console.log("Unable to create pipeline :",error);
+            kurentoClient.create('MediaPipeline', function (error, pipeline) {
+                if (error) {
+                    console.log("Unable to create pipeline :", error);
                 }
-    
+
                 mediaPipeline = pipeline;
-                
+
             });//end of the creation of pipeline
-        
+
         });//end of getKurentoClient
-        
+
         this.sessionCache.sessionStore[meetingId].webrtcPipeline = mediaPipeline;
     }
 
     //this function creates the individual endpoints which is called under the same class function.
-    userEndpointsCreate(pipeline){
+    userEndpointsCreate(pipeline) {
         var endPoints = "";
-        
-        pipeline.create('WebRtcEndpoint', function(error,endPoints){
-            if(error){
+
+        pipeline.create('WebRtcEndpoint', function (error, endPoints) {
+            if (error) {
                 pipeline.release();
                 console.log(error);
             }
@@ -64,34 +60,35 @@ class KmsPipeline
     }
 
     //this function is responsible for connecting the agent and clients endpoints to each others.
-    connectEndpoints(){        
+    connectEndpoints() {
     }
 
     //this function creates the endpoints for agent and clients.
-    createEndpoints(){
+    createEndpoints() {
 
         const userEndpoint = this.userEndpointsCreate(this.sessionCache.sessionStore[meetingId].webrtcPipeline);
 
         this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints = userEndpoint;
-        
-        console.log("Endpoints are created for user : ",this.sessionCache.sessionStore[meetingId][userId].userName);
+
+        console.log("Endpoints are created for user : ", this.sessionCache.sessionStore[meetingId][userId].userName);
         //this.connectEndpoints();
     }
 
     //this is remaining code.
-    iceCandidate(){
-        
+    iceCandidate() {
+
     }
 
     //this function process on the sdpOffer of the agent and clients and send back the callback 
     //which consist the sdpAnswer.
-    generateSdpAnswer(id,callback){        
+    generateSdpAnswer(id, callback) {
         let sdpOffer = this.sessionCache.sessionStore[meetingId][id].sdpOffer;
-        this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints.processOffer(sdpOffer,callback)
-        
+        this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints.processOffer(sdpOffer, callback)
+
     }
-        
+
 }
+
 
 module.exports = KmsPipeline;
 
@@ -100,7 +97,7 @@ module.exports = KmsPipeline;
 
 
 
-/* 
+/*
 
 if("obj.meetingId.userId.iceCandidate")
             {
@@ -119,7 +116,7 @@ if("obj.meetingId.userId.iceCandidate")
                 }
                 //socket.to("obj.meetingId.userId.").emit()
             });
-            
+
 ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -146,7 +143,7 @@ if("obj.meetingId.userId.iceCandidate")
                         iceCandidate : candidate
                     }
                     //socket.to("obj.meetingId.userId.").emit()
-                });   
+                });
             });//end of the ClientWebrtcEndpoints
 
 */

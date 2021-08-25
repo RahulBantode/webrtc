@@ -4,16 +4,14 @@ const WebrtcMessageHandler = require("./WebrtcMessageHandler");  //It having the
 const KmsWebrtcMessageHandler = require("./KmsWebrtcMessageHandler"); //Its having the function of kmswebrtc requests.
 const { Socket } = require("socket.io");
 
-class socketHandler 
-{
+class socketHandler {
     io;
     HelperObj;
     cacheObj;
     webrtcMessageHandler;
     kmsWebrtcMessageHandler;
 
-    constructor(io)
-    {
+    constructor(io) {
         this.io = io;
         this.HelperObj = new Helper();
         this.cacheObj = new SessionsCache();
@@ -21,68 +19,65 @@ class socketHandler
         this.kmsWebrtcMessageHandler = new KmsWebrtcMessageHandler();
     }
 
-    
-    init()
-    {
+
+    init() {
         this.io.on("connection", (socket) => {
-          /*===========================================================================
-          here logic can be replaced when client creates some function on client side
-          for posting messege or data if its chat application.
-          =============================================================================*/
+            /*===========================================================================
+            here logic can be replaced when client creates some function on client side
+            for posting messege or data if its chat application.
+            =============================================================================*/
             console.log("Socket connection established");
-    
+
             socket.on("message", (msg) => {
-                switch (msg.type) 
-                {
+                switch (msg.type) {
                     case 'JOIN':
                         this.HelperObj.handleJoinMsg(msg.data, socket, this.io);
-                        this.cacheObj.displayUsers(); //its for check whether function working or not.
                         break;
-    
+
                     case 'CHAT':
                         this.HelperObj.handleChatMsg(msg.data, socket, this.io);
                         break;
 
-                        
+
                     case 'CALL_REQUEST':
-                        this.webrtcMessageHandler.handleCallRequest(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleCallRequest(msg.data, socket, this.io);
                         break;
-                    
+
                     case 'CALL_RESPONSE':
-                        this.webrtcMessageHandler.handleCallResponse(msg.data,socket,this.io);
-                        break; 
-                    
+                        this.webrtcMessageHandler.handleCallResponse(msg.data, socket, this.io);
+                        break;
+
                     case 'SDP_OFFER':
-                        this.webrtcMessageHandler.handleSdpOfferRequest(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleSdpOfferRequest(msg.data, socket, this.io);
                         break;
 
                     case 'SDP_ANSWER':
-                        this.webrtcMessageHandler.handleSdpAnswer(msg.data,socket,this.io);
+                        this.webrtcMessageHandler.handleSdpAnswer(msg.data, socket, this.io);
                         break;
 
                     case 'ICE_CANDIDATE':
-                        this.webrtcMessageHandler.handleIceCandidateRequest(msg.data.socket,this.io);
+                        this.webrtcMessageHandler.handleIceCandidateRequest(msg.data.socket, this.io);
                         break;
 
                     case 'KMS_CALL_REQUEST':
-                        this.kmsWebrtcMessageHandler.handleKmsCallRequest(msg.data,socket,this.io);
+                        this.kmsWebrtcMessageHandler.handleKmsCallRequest(msg.data, socket, this.io);
                         break;
 
                     case 'KMS_CALL_RESPONSE':
-                        this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data,socket,this.io);
+                        this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data, socket, this.io);
 
-                    default: 
-                        console.log("Invalid selection of case "); 
+                    default:
+                        console.log("Invalid selection of case ");
                         break;
                 }
-    
+
             });
-    
-          //on disconnect function.
-          socket.on('disconnect', () => {
-            console.log("meeting is disconnected");
-          });
-    
+
+            //on disconnect function.
+            socket.on('disconnect', () => {
+                console.log("meeting is disconnected");
+            });
+
         });
 
     } //end of the init() method  

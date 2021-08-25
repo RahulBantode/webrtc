@@ -1,49 +1,91 @@
 
-sessionStore = {}
-let meetingId = 122;
-let userId = 1
-let meetingStore = {};
+// sessionStore = {}
+// let meetingId = 122;
+// let userId = 1
+// let meetingStore = {};
 
 
-sessionStore[meetingId] = meetingStore;
-//sessionStore[meetingId][userId] = 101;
-let userDetails = {}
-sessionStore[meetingId][userId] = userDetails;
+// sessionStore[meetingId] = meetingStore;
+// //sessionStore[meetingId][userId] = 101;
+// let userDetails = {}
+// sessionStore[meetingId][userId] = userDetails;
 
-userDetails.userName = "Rahul"
-userDetails.sdpOffer = "asdkjflksjdlkrtejoiwjr"
+// userDetails.userName = "Rahul"
+// userDetails.sdpOffer = "asdkjflksjdlkrtejoiwjr"
 
-console.log(sessionStore);
-
-
-console.log("=============================================================")
-sessionStore[meetingId][userId].webrtcendpoint = "enddddpoints";
-console.log(sessionStore)
-
-let userDetail = {};
-let userI = 2;
-sessionStore[meetingId][userI] = userDetail;
-userDetail.userName = "Bantode"
-userDetail.sdpOffer = "fdjkshrjkhjkeh"
-userDetail.webrtcendpoint = "kkkwwww"
-sessionStore[meetingId].pipeline = "webrtcPipeline"
-
-console.log(sessionStore);
+// console.log(sessionStore);
 
 
+// console.log("=============================================================")
+// sessionStore[meetingId][userId].webrtcendpoint = "enddddpoints";
+// console.log(sessionStore)
 
-Object.keys(sessionStore[meetingId]).forEach(key =>{
-    if(key != "pipeline")
-        console.log(key)
-})
+// let userDetail = {};
+// let userI = 2;
+// sessionStore[meetingId][userI] = userDetail;
+// userDetail.userName = "Bantode"
+// userDetail.sdpOffer = "fdjkshrjkhjkeh"
+// userDetail.webrtcendpoint = "kkkwwww"
+// sessionStore[meetingId].pipeline = "webrtcPipeline"
+
+// console.log(sessionStore);
 
 
-console.log(Object.keys(sessionStore[meetingId]));
+
+// Object.keys(sessionStore[meetingId]).forEach(key => {
+//     if (key != "pipeline")
+//         console.log(key)
+// })
 
 
-console.log(sessionStore[meetingId][userI].userName);
+// console.log(Object.keys(sessionStore[meetingId]));
+
+
+// console.log(sessionStore[meetingId][userI].userName);
+
+// console.log("=============================================================")
+// console.log("=============================================================")
+
+// session = {}
+// let session[meetingId] = 123;
+// function saveUserDetails(meetingId, userId, userName, sdpOffer, endpoints) {
+
+//     let userDetails = [];
+
+//     let userDetails = {
+//         userName: userName,
+//         sdpOffer: sdpOffer,
+//         endpoints: endpoints
+//     }
+
+//     let meetingStore = session[meetingId];
+
+//     if (!meetingStore) {
+//         session[meetingId] = {};
+//         session[meetingId][userId] = userDetails;
+//     } else {
+//         // userDetails = session[meetingId][userId];
+//         userDetails = session[meetingId][userId];
+//     }
+
+
+//     // userDetails[userName] = userName;
+//     // userDetails[sdpOffer] = sdpOffer;
+//     // userDetails[endpoints] = endpoints;
+
+
+//     console.log(session);
+
+// }
+
+// for (i = 0; i < 3; i++) {
+//     saveUserDetails(1010, i, "Rahul", "sfjdlflksj", "webrtcendpoints1");
+// }
+
+
+
 /*
-const obj = 
+const obj =
 {
     meetingId:"",
     names:"",
@@ -67,9 +109,9 @@ console.log(obj.id);
 
         //meetingId = 123;
         //userId = 10;
-        var obj = 
+        var obj =
         {
-            meetingId : 
+            meetingId :
             {
                 webrtcPipeline : "WebrtcPipeline",
                 agentId :
@@ -78,7 +120,7 @@ console.log(obj.id);
                     webrtcEndpoints : "AgentWebrtcEndpoint",
                     iceCandidate : [10]
                 },
-                clientId : 
+                clientId :
                 {
                     userName : "Kunal",
                     webrtcEndpoints : "ClientWebrtcEndpoint",
@@ -97,27 +139,27 @@ console.log(obj.id);
 */
 /*
 [12:51] Karan Anantpure
-    
 
-MeetingsData =  
-{​​​​​​​​
 
-    'meetingId_123': 
-    {​​​​​​​​
+MeetingsData =
+{
+
+    'meetingId_123':
+    {
         'pipeline': pipeline,
-        'socket_id_karan': 
-        {​​​​​​​​
+        'socket_id_karan':
+        {
             'name': 'karan',
             'webrtcEndPoint': callerWebrtcEndPoint
             'iceCandidates': []
         }​​​​​​​​,
-        'socket_id_rahul': 
-        {​​​​​​​​
+        'socket_id_rahul':
+        {
             'name': 'rahul',
             'webrtcEndPoint': callerWebrtcEndPoint
             'iceCandidates': []
-        }​​​​​​​​
+        }
     }​​​​​​​​,
-}​​​​​​​​
+}
 
 */
