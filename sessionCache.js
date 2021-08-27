@@ -1,29 +1,55 @@
 
 //global declaration of the userlist array.
 
+var sessionStore = {};
+
 class SessionsCache {
     userList = [];
     usersMesseges = [];
 
-    sessionStore = {};
+    meetingId;
+
+    //setter for meetingId
+    setMeetingId(meetingId) {
+        this.meetingId = meetingId;
+    }
+
+    //getter for meetingId
+    getMeetingId() {
+        return this.meetingId;
+    }
 
     //this is responsible for saving the user details
     saveUserDetails(meetingId, userId, userName, sdpOffer) {
 
-        let meetingStore = this.sessionCache.sessionStore.get(meetingId);
+        let meetingStore = sessionStore[meetingId];
 
         let userDetails = {};
+
         if (!meetingStore) {
-            this.sessionCache.sessionStore[meetingId] = {};
-            this.sessionCache.sessionStore[meetingId][userId] = userDetails;
+            this.setMeetingId(meetingId);
+            sessionStore[meetingId] = {};
+            sessionStore[meetingId][userId] = userDetails;
         } else {
-            userDetails = this.sessionCache.sessionStore[meetingId][userId];
+            sessionStore[meetingId][userId] = userDetails;
         }
+
         userDetails.userName = userName;
         userDetails.sdpOffer = sdpOffer;
 
-        console.log(sessionStore);
+        console.log("Users data from session cache :", sessionStore);
 
+    }
+
+    getSessionStore() {
+        return sessionStore;
+    }
+
+    setMediaPipeline(webrtcPipeline) {
+        let mediaPipeline = {};
+
+        sessionStore[this.getMeetingId()] = mediaPipeline;
+        mediaPipeline.webrtcPipeline = webrtcPipeline;
     }
 
     //reponsible for get the user data.

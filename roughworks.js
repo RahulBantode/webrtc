@@ -162,4 +162,24 @@ MeetingsData =
     }​​​​​​​​,
 }
 
+//const sessionStore = {};
+// {
+//     <meetingId> :
+//     {
+//         <webrtcPipeline>:
+//         <agentId>:
+//         {
+//             userName : "",
+//             userId : "",
+//             sdpOffer : "",
+//         },
+//         <clientId>:
+//         {
+//             userName : "",
+//             userId : "",
+//             sdpOffer : "",
+//
+//         }
+//     }
+// }
 */

@@ -11,37 +11,42 @@ class KmsPipeline {
     //this function responsible for creating the communication between kms and server.
     getKurentoClient(callback) {
         const mediaServerUrl = "ws://127.0.0.1:8888/kurento";
-        kurento(mediaServerUrl, function (error, kurentoClient) {
+        let kurentoClient = "";
+
+        kurento(mediaServerUrl, function (error, _kurentoClient) {
             if (error) {
                 var messege = "couldn't find the media server at address : " + mediaServerUrl;
                 return callback(messege);
             }
-
-            return callback(kurentoClient);
+            kurentoClient = _kurentoClient;
+            callback(null, kurentoClient);
         });
     }
 
     //this function responsible for creating the pipeline over the kms
     createPipeline() {
-        let mediaPipeline = "";
+        let webrtcPipeline = "";
 
         this.getKurentoClient(function (error, kurentoClient) {
             if (error) {
                 console.log(error);
             }
 
+            console.log("kurentoclient : ", kurentoClient);
             kurentoClient.create('MediaPipeline', function (error, pipeline) {
                 if (error) {
                     console.log("Unable to create pipeline :", error);
                 }
 
-                mediaPipeline = pipeline;
+                webrtcPipeline = pipeline;
 
             });//end of the creation of pipeline
-
         });//end of getKurentoClient
 
-        this.sessionCache.sessionStore[meetingId].webrtcPipeline = mediaPipeline;
+
+        console.log("Pipeline is : ", webrtcPipeline);
+        //this.sessionCache.setMediaPipeline(webrtcPipeline);
+        console.log("create pipeline function scope completed");
     }
 
     //this function creates the individual endpoints which is called under the same class function.
@@ -66,11 +71,15 @@ class KmsPipeline {
     //this function creates the endpoints for agent and clients.
     createEndpoints() {
 
-        const userEndpoint = this.userEndpointsCreate(this.sessionCache.sessionStore[meetingId].webrtcPipeline);
+        var sessionStore = this.sessionCache.getSessionStore();
+        var meetingId = this.sessionCache.getMeetingId();
 
-        this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints = userEndpoint;
+        const userEndpoint = this.userEndpointsCreate(sessionStore[meetingId].webrtcPipeline);
 
-        console.log("Endpoints are created for user : ", this.sessionCache.sessionStore[meetingId][userId].userName);
+        //this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints = userEndpoint;
+
+        //console.log("Endpoints are created for user : ");
+
         //this.connectEndpoints();
     }
 
