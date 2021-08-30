@@ -27,30 +27,23 @@ class KmsWebrtcMessageHandler {
     }
 
     handleKmsCallResponse(messege, socket, io) {
-        /*const emitCallResponse = {
-            type : "_KMS_CALL_RESPONSE",
-            data :
-            {
-                meetingId  : messege.meetingId,
-                userId     : messege.userId,
-                userName   : messege.userName,
-                callStatus : messege.callStatus
-            }
-        }*/
+
+        //this part for displaying the the keys of the sessionStore.
+        var sessionStore = this.sessionCache.getSessionStore();
+        var meetingId = this.sessionCache.getMeetingId();
+        //console.log("messege handler : ", meetingId);
+
 
         this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
 
         //if (messege.callStatus == 1) {
 
         //function is responsible for creating the pipeline for kms
-        this.kmspipeline.createPipeline();
-
-        //this part for displaying the the keys of the sessionStore.
-        var sessionStore = this.sessionCache.getSessionStore();
-        var meetingId = this.sessionCache.getMeetingId();
+        this.kmspipeline.createPipeline(meetingId);
 
         console.log("Session store from kmsmesseger handler : ", sessionStore[meetingId]);
         console.log("Keys are : ", Object.keys(sessionStore[meetingId]));
+
 
         //under the pipeline endpoints are created
         /*Object.keys(sessionStore[meetingId]).forEach(key => {

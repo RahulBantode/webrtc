@@ -5,9 +5,11 @@ const SessionCache = require("./sessionCache");
 
 class KmsPipeline {
     sessionCache;
+
     constructor() {
         this.sessionCache = new SessionCache();
     }
+
     //this function responsible for creating the communication between kms and server.
     getKurentoClient(callback) {
         const mediaServerUrl = "ws://127.0.0.1:8888/kurento";
@@ -23,8 +25,8 @@ class KmsPipeline {
         });
     }
 
-    //this function responsible for creating the pipeline over the kms
-    createPipeline() {
+    //this function responsible for creating the pipeline
+    createPipeline(meetingId) {
         let webrtcPipeline = "";
 
         this.getKurentoClient(function (error, kurentoClient) {
@@ -32,20 +34,25 @@ class KmsPipeline {
                 console.log(error);
             }
 
-            console.log("kurentoclient : ", kurentoClient);
-            kurentoClient.create('MediaPipeline', function (error, pipeline) {
+            //console.log("kurentoclient : ", kurentoClient);
+
+            kurentoClient.create('MediaPipeline', function (error, pipeline, this.sessionCache) {
                 if (error) {
                     console.log("Unable to create pipeline :", error);
                 }
 
                 webrtcPipeline = pipeline;
+                //console.log("Pipeline is : ", webrtcPipeline);
+                this.sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
+                console.log("Pipeline id is : ", webrtcPipeline.id);
 
             });//end of the creation of pipeline
         });//end of getKurentoClient
 
 
-        console.log("Pipeline is : ", webrtcPipeline);
-        //this.sessionCache.setMediaPipeline(webrtcPipeline);
+        // let abc = "Rahul"
+        //this.sessionCache.setMediaPipeline(meetingId, abc);
+
         console.log("create pipeline function scope completed");
     }
 

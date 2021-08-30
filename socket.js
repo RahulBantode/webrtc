@@ -67,7 +67,7 @@ class socketHandler {
                         this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data, socket, this.io);
 
                     default:
-                        console.log("Invalid selection of case ");
+                        console.log("Invalid selection of case <switch case error>");
                         break;
                 }
 

@@ -3,11 +3,12 @@
 
 var sessionStore = {};
 
+
 class SessionsCache {
     userList = [];
     usersMesseges = [];
-
     meetingId;
+
 
     //setter for meetingId
     setMeetingId(meetingId) {
@@ -45,11 +46,11 @@ class SessionsCache {
         return sessionStore;
     }
 
-    setMediaPipeline(webrtcPipeline) {
-        let mediaPipeline = {};
+    setMediaPipeline(meetingId, webrtcPipeline) {
 
-        sessionStore[this.getMeetingId()] = mediaPipeline;
-        mediaPipeline.webrtcPipeline = webrtcPipeline;
+        console.log("Meeting Id : ", meetingId);
+        sessionStore[meetingId][webrtcPipeline] = webrtcPipeline;
+
     }
 
     //reponsible for get the user data.
