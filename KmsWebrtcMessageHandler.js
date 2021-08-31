@@ -31,27 +31,16 @@ class KmsWebrtcMessageHandler {
         //this part for displaying the the keys of the sessionStore.
         var sessionStore = this.sessionCache.getSessionStore();
         var meetingId = this.sessionCache.getMeetingId();
-        //console.log("messege handler : ", meetingId);
-
 
         this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
 
         //if (messege.callStatus == 1) {
 
         //function is responsible for creating the pipeline for kms
+
         this.kmspipeline.createPipeline(meetingId);
 
-        console.log("Session store from kmsmesseger handler : ", sessionStore[meetingId]);
-        console.log("Keys are : ", Object.keys(sessionStore[meetingId]));
-
-
-        //under the pipeline endpoints are created
-        /*Object.keys(sessionStore[meetingId]).forEach(key => {
-            if (key != "webrtcPipeline") {
-                this.kmspipeline.createEndpoints();
-            }
-        });*/
-
+        //console.log("webrtc pipeline form <KMSWebrtcMessegeHandler> : ", sessionStore[meetingId].webrtcPipeline);
 
         //generate the sdp answer for each user and send back to respective user.
         /*
@@ -65,14 +54,14 @@ class KmsWebrtcMessageHandler {
                             kmsSdpAnswer: kmsSdpAnswer
                         }
                     }
-
+    
                     socket.broadcast.to(key).emit("message", sdpAnswer);
                     //socket.to(key).emit("message",kmsSdpAnswer);
-
+    
                 });//endof generatesdpanswer
-
+    
             }//end of if            
-
+    
         });//end of the foreach
         */
         //}//end of if

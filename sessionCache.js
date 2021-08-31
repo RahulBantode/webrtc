@@ -47,10 +47,13 @@ class SessionsCache {
     }
 
     setMediaPipeline(meetingId, webrtcPipeline) {
+        //console.log("Meeting Id : ", meetingId);
+        sessionStore[meetingId].webrtcPipeline = webrtcPipeline;
 
-        console.log("Meeting Id : ", meetingId);
-        sessionStore[meetingId][webrtcPipeline] = webrtcPipeline;
+    }
 
+    setUserEndpoints(meetingId, userId, webrtcEndpoints) {
+        sessionStore[meetingId][userId]['webrtcEndpoints'] = webrtcEndpoints;
     }
 
     //reponsible for get the user data.

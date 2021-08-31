@@ -28,6 +28,9 @@ class KmsPipeline {
     //this function responsible for creating the pipeline
     createPipeline(meetingId) {
         let webrtcPipeline = "";
+        let sessionCache = this.sessionCache;
+        var sessionStore = this.sessionCache.getSessionStore();
+        var createEndpoints = this.createEndpoints();
 
         this.getKurentoClient(function (error, kurentoClient) {
             if (error) {
@@ -35,57 +38,57 @@ class KmsPipeline {
             }
 
             //console.log("kurentoclient : ", kurentoClient);
-
-            kurentoClient.create('MediaPipeline', function (error, pipeline, this.sessionCache) {
+            kurentoClient.create('MediaPipeline', function (error, pipeline) {
                 if (error) {
                     console.log("Unable to create pipeline :", error);
                 }
 
                 webrtcPipeline = pipeline;
                 //console.log("Pipeline is : ", webrtcPipeline);
-                this.sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
+                sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
                 console.log("Pipeline id is : ", webrtcPipeline.id);
 
+            }).then(() => {
+                //console.log("create pipeline function scope completed");
+                //console.log("Keys of the objects are : ", Object.keys(sessionStore[meetingId]));
+                console.log("Session store from <kmsWebrtcHelper class> : ", sessionStore[meetingId]);
+
+                var webrtcPipeline = sessionStore[meetingId].webrtcPipeline;
+                //console.log(webrtcPipeline);
+                if (webrtcPipeline) {
+                    Object.keys(sessionStore[meetingId]).forEach(key => {
+                        if (key != 'webrtcPipeline') {
+                            console.log("Inside if ");
+                            createEndpoints(key, meetingId, webrtcPipeline);
+                        }
+                    })
+                }
             });//end of the creation of pipeline
-        });//end of getKurentoClient
-
-
-        // let abc = "Rahul"
-        //this.sessionCache.setMediaPipeline(meetingId, abc);
-
-        console.log("create pipeline function scope completed");
+        })
     }
 
-    //this function creates the individual endpoints which is called under the same class function.
-    userEndpointsCreate(pipeline) {
-        var endPoints = "";
-
-        pipeline.create('WebRtcEndpoint', function (error, endPoints) {
-            if (error) {
-                pipeline.release();
-                console.log(error);
-            }
-
-            endPoints = endPoints;
-        });
-        return endPoints;
-    }
 
     //this function is responsible for connecting the agent and clients endpoints to each others.
     connectEndpoints() {
     }
 
     //this function creates the endpoints for agent and clients.
-    createEndpoints() {
+    createEndpoints(userId, meetingId, webrtcPipeline) {
+        console.log("Inside the creaEndpoints function")
+        console.log("WebrtcPipeline : ", webrtcPipeline);
 
-        var sessionStore = this.sessionCache.getSessionStore();
-        var meetingId = this.sessionCache.getMeetingId();
+        //var sessionStore = this.sessionCache.getSessionStore();
+        var sessionCache = this.sessionCache;
 
-        const userEndpoint = this.userEndpointsCreate(sessionStore[meetingId].webrtcPipeline);
+        webrtcPipeline.create('WebrtcEndpoint', function (error, endpoints) {
+            if (error) {
+                webrtcPipeline.release();
+                console.log(error);
+            }
 
-        //this.sessionCache.sessionStore[meetingId][userId].webrtcEndpoints = userEndpoint;
+            sessionCache.setUserEndpoints(meetingId, userId, endpoints);
 
-        //console.log("Endpoints are created for user : ");
+        })
 
         //this.connectEndpoints();
     }
