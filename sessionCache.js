@@ -30,9 +30,10 @@ class SessionsCache {
         if (!meetingStore) {
             this.setMeetingId(meetingId);
             sessionStore[meetingId] = {};
-            sessionStore[meetingId][userId] = userDetails;
+            sessionStore[meetingId].participants = {};
+            sessionStore[meetingId].participants[userId] = userDetails;
         } else {
-            sessionStore[meetingId][userId] = userDetails;
+            sessionStore[meetingId].participants[userId] = userDetails;
         }
 
         userDetails.userName = userName;
@@ -47,13 +48,14 @@ class SessionsCache {
     }
 
     setMediaPipeline(meetingId, webrtcPipeline) {
-        //console.log("Meeting Id : ", meetingId);
+        console.log("webrtcpipeline : ", webrtcPipeline.id);
         sessionStore[meetingId].webrtcPipeline = webrtcPipeline;
 
     }
 
     setUserEndpoints(meetingId, userId, webrtcEndpoints) {
-        sessionStore[meetingId][userId]['webrtcEndpoints'] = webrtcEndpoints;
+        //console.log("Endpoint from sessioncache : ", webrtcEndpoints);
+        sessionStore[meetingId].participants[userId].webrtcEndpoints = webrtcEndpoints;
     }
 
     //reponsible for get the user data.

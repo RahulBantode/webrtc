@@ -56,7 +56,7 @@ class socketHandler {
                         break;
 
                     case 'ICE_CANDIDATE':
-                        this.webrtcMessageHandler.handleIceCandidateRequest(msg.data.socket, this.io);
+                        this.webrtcMessageHandler.handleIceCandidateRequest(msg.data, socket, this.io);
                         break;
 
                     case 'KMS_CALL_REQUEST':
@@ -65,6 +65,7 @@ class socketHandler {
 
                     case 'KMS_CALL_RESPONSE':
                         this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data, socket, this.io);
+                        break;
 
                     default:
                         console.log("Invalid selection of case <switch case error>");
