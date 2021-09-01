@@ -1,10 +1,12 @@
 
+const e = require("cors");
 const kurento = require("kurento-client");
 const SessionCache = require("./sessionCache");
 
 class KmsPipeline {
     sessionCache;
     obj;
+    endpointList = [];
 
     constructor() {
         this.sessionCache = new SessionCache();
@@ -35,13 +37,15 @@ class KmsPipeline {
                     console.log(error);
                     reject(error);
                 }
+
+                //this function used to create pipeline and set that pipeline in sessionCache
                 kurentoClient.create('MediaPipeline', (error, webrtcPipeline) => {
-                    console.log('mediaPipeline id is :', webrtcPipeline.id);
                     if (error) {
                         console.log("Unable to create pipeline :", error);
                         reject(error);
                     }
 
+                    //console.log('mediaPipeline id is :', webrtcPipeline.id);
                     this.sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
 
                     if (webrtcPipeline) {
@@ -54,17 +58,16 @@ class KmsPipeline {
                             resolve();
                         });
 
-                    }
-                });
-            });
-        });
-    }
+                    }//end of if
+                }); //end of mediapipeline create function
+            });//end of getKurentoClient function
+        });//end of promise
+    }//end of createPipeline function
 
-    //this function creates the endpoints for agent and clients.
+    //this function creates the endpoints for agent and clients and set their endpoints
+    //into sessionCache.
     createEndpoints(userId, meetingId, webrtcPipeline) {
-        var sessionStore = this.sessionCache.getSessionStore();
         return new Promise((resolve, reject) => {
-
             webrtcPipeline.create('WebRtcEndpoint', (error, endPoint) => {
                 if (error) {
                     webrtcPipeline.release();
@@ -75,13 +78,17 @@ class KmsPipeline {
                 console.log("Endpoints id  : ", endPoint.id);
                 //connectEndpoints(endpoints);
                 resolve(endPoint);
-            });
-        });
-    }
+            });//end of the webrtcEndpoint function creation
+        });//end of the promise
+    }//end of the createEndpoints function
 
-    //this function is responsible for connecting the agent and clients endpoints to each others.
-    connectEndpoints(endpoint) {
-        console.log("Inside the connect endpoint function .");
+    //this function is used for connecting users endpoints with each others.
+    connectEndpoints(user1Endpoint, user2endpoint) {
+        user1Endpoint.connect(user1Endpoint, function (error) {
+            if (error) {
+                console.log(error);
+            }
+        })
     }
 
 
@@ -91,14 +98,12 @@ class KmsPipeline {
 
     }
 
-    //this function process on the sdpOffer of the agent and clients and send back the callback 
-    //which consist the sdpAnswer.
+    //this function process on the offer of users and send back the sdpAnswer of each users
+    //in the form of callback
     generateSdpAnswer(userId, meetingId, callback) {
+
         let sessionStore = this.sessionCache.getSessionStore();
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
-        //console.log("Enpoints are : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
-
-        //console.log("Type of sdp offer : ", typeof (sdpOffer.sdp));
         sessionStore[meetingId].participants[userId].webrtcEndpoints.processOffer(sdpOffer.sdp, callback);
 
     }

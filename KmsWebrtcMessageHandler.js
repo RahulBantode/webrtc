@@ -31,6 +31,7 @@ class KmsWebrtcMessageHandler {
         //this part for displaying the the keys of the sessionStore.
         var sessionStore = this.sessionCache.getSessionStore();
         var meetingId = this.sessionCache.getMeetingId();
+        var participants = sessionStore[meetingId].participants;
 
         this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
 
@@ -40,8 +41,15 @@ class KmsWebrtcMessageHandler {
 
             await this.kmsWebrtcHelper.createPipeline(meetingId);
 
+            // for (var icounter = 1; icounter <= participants.length; icounter++) {
+            //     for (var jcounter = 1; jcounter <= participants.length; jcounter++) {
+            //         if (icounter != jcounter) {
+            //             this.kmsWebrtcHelper.connectEndpoints(participants[icounter][userId].webrtcEndpoint
+            //                 , participants[jcounter][userId].webrtcEndpoint);
+            //         }
+            //     }
+            // }
             console.log("After createpipeline function");
-
 
             //generate the sdp answer for each user and send back to respective user.
             Object.keys(sessionStore[meetingId].participants).forEach(userId => {
@@ -49,7 +57,6 @@ class KmsWebrtcMessageHandler {
                     if (error) {
                         console.log(error);
                     }
-
                     const sdpAnswer = {
                         type: "_KMS_SDP_ANSWER",
                         data: {
@@ -59,14 +66,12 @@ class KmsWebrtcMessageHandler {
                         }
                     }
 
-                    console.log("sdp answer : ", sdpAnswer);
+                    console.log("sdp answer : ", sdpAnswer.data.userId);
                     socket.broadcast.to(userId).emit("message", sdpAnswer);
 
                 });//endof generatesdpanswer            
 
             });//end of the foreach
-
-
         }//end of main if
     }
 }
