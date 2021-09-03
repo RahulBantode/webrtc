@@ -1,61 +1,53 @@
-class demo
-{
-    fun()
-    {
+class demo {
+    fun() {
         console.log("Inside the <fun> function class <demo>");
-    } 
-    
-    hello()
-    {
+    }
+
+    hello() {
         return "Inside the hello method";
     }
-    
-         reply = 
-         {
-            admin : "Rahul Bantode",
-            data : 
+
+    reply =
+        {
+            admin: "Rahul Bantode",
+            data:
             {
-                uname : "mohit",
-                id : 101
+                uname: "mohit",
+                id: 101
             },
-            details : this.hello(),
+            details: this.hello(),
 
-            messeges : [],
+            messeges: [],
 
-            type : ["JOIN" , "CHAT" ,"Me"]
-            
+            type: ["JOIN", "CHAT", "Me"]
+
         }
-    
+
 }
 
 
 
-class mode 
-{
-    constructor()
-    {
+class mode {
+    constructor() {
         this.demoobj = new demo();
     }
 
-    gun()
-    {
+    gun() {
         console.log("Inside the gun method of mode class");
         this.demoobj.fun();
     }
 
-    sun()
-    {
-        var array = ["Mango","Oranges","santra"];
+    sun() {
+        var array = ["Mango", "Oranges", "santra"];
         console.log(this.demoobj.reply);
         console.log(this.demoobj.reply.details);
         this.demoobj.reply.messeges.push(array);
         console.log(this.demoobj.reply.messeges);
-        
+
         let type = "JOIN";
-        switch(type)
-        {
-            case "JOIN" : console.log("Join");
-            break;
+        switch (type) {
+            case "JOIN": console.log("Join");
+                break;
         }
     }
 }
@@ -65,58 +57,50 @@ mObj.gun();
 mObj.sun();
 
 
-class meeting
-{
+class meeting {
     meetingId;
-    constructor()
-    {
+    constructor() {
         this.meetingId = 1234;
     }
 
-    details = 
-    {
-        meetingId : this.meetingId
+    details =
+        {
+            meetingId: this.meetingId
 
-    }
-    
+        }
+
 }
 
 
-class sessionsCache
-{
+class sessionsCache {
     obj;
-    constructor()
-    {
-        this.obj = new meeting();        
+    constructor() {
+        this.obj = new meeting();
     }
 
-    display()
-    {
-        console.log("Meeting Id : ",this.obj.data.meetingId);
-        console.log("UserName : ",this.obj.data.userNames);
+    display() {
+        console.log("Meeting Id : ", this.obj.data.meetingId);
+        console.log("UserName : ", this.obj.data.userNames);
     }
 
-    Add()
-    {
+    Add() {
         let uname = "Prashant Patil";
         this.obj.data.userNames.push(uname);
     }
 
     array = [
-        {user : "Rahul",mobile:8624924587},
-        {user : "kunal",mobile:9734237865},
-        {user : "nitin",mobile:9012437824}
+        { user: "Rahul", mobile: 8624924587 },
+        { user: "kunal", mobile: 9734237865 },
+        { user: "nitin", mobile: 9012437824 }
     ]
 
-    arrayAccess()
-    {
+    arrayAccess() {
         console.log("length of array : ", this.array.length);
-        let icnt ;
-        for(icnt=0; icnt < this.array.length; icnt++)
-        {
-            if(icnt != 0)
+        let icnt;
+        for (icnt = 0; icnt < this.array.length; icnt++) {
+            if (icnt != 0)
                 console.log(`UserName : ${this.array[icnt].user} , Mobile : ${this.array[icnt].mobile}`);
-        }      
+        }
     }
 }
 
@@ -157,3 +141,4 @@ io.on("connection", (socket) => {
 socket.emit("hello", "world");
 
 */
+

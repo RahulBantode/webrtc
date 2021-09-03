@@ -1,5 +1,4 @@
-class WebrtcMessageHandler
-{
+class WebrtcMessageHandler {
     /*===========================================================================================
         function - handleCallRequest()
         class -WebrtcMessageHandler
@@ -8,24 +7,22 @@ class WebrtcMessageHandler
         functionality :- this handle the request of call comes from agent to all the clients
                          with getingusermedia
     ==============================================================================================*/
-    handleCallRequest(messege,socket,io)
-    {
+    handleCallRequest(messege, socket, io) {
 
-        const emitResponse = 
+        const emitResponse =
         {
-            type : '_CALL_REQUEST',
-            data : 
+            type: '_CALL_REQUEST',
+            data:
             {
-                meetingId : messege.meetingId,
-                userName  : messege.userName,
-                userId : messege.userId
+                meetingId: messege.meetingId,
+                userName: messege.userName,
+                userId: messege.userId
             }
         }
 
-        if(messege.meetingId)
-        {
+        if (messege.meetingId) {
             //socket.to(messege.meetingId).emit("messege",emit); //
-            socket.broadcast.emit("message",emitResponse);
+            socket.broadcast.emit("message", emitResponse);
         }
     }
 
@@ -37,24 +34,22 @@ class WebrtcMessageHandler
         functionality :- this handle the response from all the clients if they taking call or not
                          and response send back to the agent.
     ==============================================================================================*/
-    handleCallResponse(messege,socket,io)
-    {
-        const emitResponse = 
+    handleCallResponse(messege, socket, io) {
+        const emitResponse =
         {
-            type : "_CALL_RESPONSE",
-            data : 
+            type: "_CALL_RESPONSE",
+            data:
             {
-                meetingId : messege.meetingId,
-                userId : messege.userId,
-                callStatus :  messege.callStatus,
-                userName  : messege.userName
+                meetingId: messege.meetingId,
+                userId: messege.userId,
+                callStatus: messege.callStatus,
+                userName: messege.userName
             }
         }
 
-        if(messege.meetingId)
-        {
-            socket.broadcast.emit("message",emitResponse);
-        }    
+        if (messege.meetingId) {
+            socket.broadcast.emit("message", emitResponse);
+        }
     }
 
     /*===========================================================================================
@@ -64,62 +59,57 @@ class WebrtcMessageHandler
         return - none
         functionality :- this handle the request (SDP) which comes from agent to all the client.
     ==============================================================================================*/
-    handleSdpOfferRequest(messege,socket,io)
-    {
-        const sdpOffer = 
+    handleSdpOfferRequest(messege, socket, io) {
+        const sdpOffer =
         {
-            type : "_SDP_OFFER",
-            data : 
+            type: "_SDP_OFFER",
+            data:
             {
-                meetingId : messege.meetingId,
-                userId  : messege.userId,
-                userName : messege.userName,
-                sdpOffer : messege.sdpOffer
+                meetingId: messege.meetingId,
+                userId: messege.userId,
+                userName: messege.userName,
+                sdpOffer: messege.sdpOffer
             }
         }
 
-        if(messege.meetingId)
-        {
-            socket.broadcast.emit("message",sdpOffer);
+        if (messege.meetingId) {
+            socket.broadcast.emit("message", sdpOffer);
         }
     }
 
-    handleSdpAnswer(messege,socket,io)
-    {
-        const sdpAnswer = 
+    handleSdpAnswer(messege, socket, io) {
+        const sdpAnswer =
         {
-            type : "_SDP_ANSWER",
-            data :
+            type: "_SDP_ANSWER",
+            data:
             {
-                meetingId : messege.meetingId,
-                userId  : messege.userId,
-                userName : messege.userName,
-                sdpAnswer : messege.sdpAnswer
+                meetingId: messege.meetingId,
+                userId: messege.userId,
+                userName: messege.userName,
+                sdpAnswer: messege.sdpAnswer
             }
         }
 
-        
-        if(messege.meetingId)
-        {
-            socket.broadcast.emit("message",sdpAnswer);
+
+        if (messege.meetingId) {
+            socket.broadcast.emit("message", sdpAnswer);
         }
     }
 
-    handleIceCandidateRequest(message,socket,io)
-    {
-        const iceCandidate = 
+    handleIceCandidateRequest(message, socket, io) {
+        const iceCandidate =
         {
-            type : "_ICE_CANDIDATE",
-            data : 
+            type: "_ICE_CANDIDATE",
+            data:
             {
                 //meetingId : message.meetingId,
-                userId  : message.userId,
-                userName : message.userName,
-                iceCandidate : message.iceCandidate
+                userId: message.userId,
+                userName: message.userName,
+                iceCandidate: message.iceCandidate
             }
         }
 
-        socket.broadcast.emit("message",iceCandidate);
+        socket.broadcast.emit("message", iceCandidate);
     }
 }
 

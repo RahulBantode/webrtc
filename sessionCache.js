@@ -47,17 +47,22 @@ class SessionsCache {
         return sessionStore;
     }
 
+    //this function set the mediaPipeline into the sessioncache.
     setMediaPipeline(meetingId, webrtcPipeline) {
-        console.log("webrtcpipeline : ", webrtcPipeline.id);
+        //console.log("webrtcpipeline : ", webrtcPipeline.id);
         sessionStore[meetingId].webrtcPipeline = webrtcPipeline;
 
     }
-
+    //this function set the userEndpoint into the sessioncache
     setUserEndpoints(meetingId, userId, webrtcEndpoints) {
         //console.log("Endpoint from sessioncache : ", webrtcEndpoints);
         sessionStore[meetingId].participants[userId].webrtcEndpoints = webrtcEndpoints;
     }
 
+    //this function is used to initialize the iceCandidateQueue for the specified user.
+    initializeIceCandidateQueue(meetingId, userId) {
+        sessionStore[meetingId].participants[userId].iceCandidateQueue = [];
+    }
     //reponsible for get the user data.
     setUserData(users) {
         this.userList.push(users);

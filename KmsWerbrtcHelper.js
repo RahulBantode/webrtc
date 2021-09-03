@@ -28,7 +28,7 @@ class KmsPipeline {
     }
 
     //this function responsible for creating the pipeline
-    async createPipeline(meetingId) {
+    async createPipeline(meetingId, io) {
         var sessionStore = this.sessionCache.getSessionStore();
 
         return new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ class KmsPipeline {
                     if (webrtcPipeline) {
                         let createAllEnpointPromises = Object.keys(sessionStore[meetingId].participants).map((participantId) => {
                             //console.log("Inside if <key> is : ", key);
-                            return this.createEndpoints(participantId, meetingId, webrtcPipeline);
+                            return this.createEndpoints(participantId, meetingId, webrtcPipeline, sessionStore, io);
                         });
                         Promise.all(createAllEnpointPromises).then((values) => {
                             //console.log("....endPoints:", values);
@@ -66,7 +66,7 @@ class KmsPipeline {
 
     //this function creates the endpoints for agent and clients and set their endpoints
     //into sessionCache.
-    createEndpoints(userId, meetingId, webrtcPipeline) {
+    createEndpoints(userId, meetingId, webrtcPipeline, sessionStore, io) {
         return new Promise((resolve, reject) => {
             webrtcPipeline.create('WebRtcEndpoint', (error, endPoint) => {
                 if (error) {
@@ -75,27 +75,111 @@ class KmsPipeline {
                     reject(error);
                 }
                 this.sessionCache.setUserEndpoints(meetingId, userId, endPoint);
+                //this is for connecting the enpoints with each others.
+                this.endpointList.push(endPoint);
                 console.log("Endpoints id  : ", endPoint.id);
-                //connectEndpoints(endpoints);
+
+                //this part for icecandidate add from user to the kms
+                //we are maintain one iceCandidateQueue -
+                //If candidatequeue has icecandidate then we collect it and to the endpoint.
+                if (sessionStore[meetingId].participants[userId].iceCandidateQueue) {
+                    while (sessionStore[meetingId].participants[userId].iceCandidateQueue.length) {
+                        var iceCandidate = sessionStore[meetingId].participants[userId].iceCandidateQueue.shift();
+                        endPoint.addIceCandidate(iceCandidate);
+
+                    }
+                    console.log("**********<createEndpoint> function : typeof icecandidate : ", typeof (iceCandidate));
+                    console.log("**********<createEndpoint> : Icecandidate :", iceCandidate);
+                }
+
+
+                //this function for sending the icecandidate from kms to user.
+                endPoint.on('OnIceCandidate', (event) => {
+                    let iceCandidate = kurento.getComplexType('IceCandidate')(event.iceCandidate);
+                    console.log("In sending the kms to user (typeof) :", typeof (iceCandidate));
+                    //console.log("Ice candidate : ", iceCandidate);
+                    const candidate = {
+                        type: "_KMS_ICE_CANDIDATE",
+                        data: {
+                            meetingId: meetingId,
+                            userId: userId,
+                            candidate: {
+                                type: "iceCandidate",
+                                iceCandidate: iceCandidate
+                            }
+                        }
+                    }
+                    io.to(userId).emit("message", candidate);
+                    console.log("icecandidate send to the endpoint <createEndpoint> function : ", userId);
+                });
+
                 resolve(endPoint);
             });//end of the webrtcEndpoint function creation
         });//end of the promise
     }//end of the createEndpoints function
 
     //this function is used for connecting users endpoints with each others.
-    connectEndpoints(user1Endpoint, user2endpoint) {
-        user1Endpoint.connect(user1Endpoint, function (error) {
+    connectEndpoints() {
+
+        this.endpointList[0].connect(this.endpointList[1], (error) => {
+            if (error) {
+                console.log(error)
+            }
+            console.log("Agent : Enpoint is connected");
+        });
+
+        this.endpointList[1].connect(this.endpointList[0], (error) => {
             if (error) {
                 console.log(error);
             }
+            console.log("Users : Endpoint is connected ");
         })
-    }
+
+        // console.log("Length of the endpointList array : ", this.endpointList.length);
+        // if (this.endpointList.length == 0) {
+        //     console.log("Error : Unable to connect the enpoints");
+        // }
+        // else {
+        //     for (var agentCounter = 1; agentCounter <= this.endpointList.length; agentCounter++) {
+        //         for (var userCounter = 1; userCounter <= this.endpointList.length; userCounter++) {
+        //             if (agentCounter != userCounter) {
+        //                 console.log("AgentEndpoint Id is : ", this.endpointList[agentCounter].id);
+        //                 //console.log("UserEndpoint Id is : ", this.endpointList[userCounter].id);
+
+        //                 // this.endpointList[agentCounter].connect(this.endpointLis[userCounter], (error) => {
+        //                 //     if (error) {
+        //                 //         console.log(error);
+        //                 //     }//inner if completed
+
+        //                 console.log("connection created ")
+
+        //                 //});//connect statement completed
+        //             }//outer if completed
+        //         }//inner for completed
+        //     }//outer for completed
+        // }//else part completed
+    }//connect endpoint function completed
 
 
+    //Function used to handle the icecandidate
 
-    //this is remaining code.
-    iceCandidate() {
+    onIceCandidate(meetingId, userId, iceCandidate) {
+        console.log("---------START <onIceCandidate>---------");
+        var iceCandidate = kurento.getComplexType('IceCandidate')(iceCandidate);
+        let sessionStore = this.sessionCache.getSessionStore();
 
+        console.log("Type of Icecandidate : ", typeof (iceCandidate));
+        console.log("Icecandidate from onIceCandidate Function ", iceCandidate);
+
+        let userEndPoint = sessionStore[meetingId].participants[userId].webrtcEndpoints;
+        if (userEndPoint) {
+            userEndPoint.addIceCandidate(iceCandidate);
+        }
+        else {
+            sessionStore[meetingId].participants[userId].iceCandidateQueue.push(iceCandidate);
+        }
+
+        console.log("---------END <onIceCandidate>---------");
     }
 
     //this function process on the offer of users and send back the sdpAnswer of each users
@@ -106,64 +190,15 @@ class KmsPipeline {
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
         sessionStore[meetingId].participants[userId].webrtcEndpoints.processOffer(sdpOffer.sdp, callback);
 
+        //gatherCandidate - this is inbuilt function called after processOffer function.
+        sessionStore[meetingId].participants[userId].webrtcEndpoints.gatherCandidates((error) => {
+            if (error) {
+                console.log("Error occur in gathering the ice candidate");
+            }
+        });
+
     }
 }
 
 
 module.exports = KmsPipeline;
-
-
-
-
-
-
-/*
-
-if("obj.meetingId.userId.iceCandidate")
-            {
-                while("obj.meetingId.userId.iceCandidate.length")
-                {
-                    var candidate = obj.meetingId.userId.iceCandidate.shift();
-                    AgentWebrtcEndpoint.iceCandidate(candidate);
-                }
-            }
-
-            AgentWebrtcEndpoint.on('OnIceCandidate',function(event){
-                var candidate = kurento.getComplexType('<string not decide yet>')(event.candidate);
-                const iceCandidate = {
-                    id : "<notation not decided yet>",
-                    iceCandidate : candidate
-                }
-                //socket.to("obj.meetingId.userId.").emit()
-            });
-
-----------------------------------------------------------------------------------------------------------------------
-
-
-            pipeline.create('WebrtcEndpoints', function(error,ClientWebrtcEndpoint){
-                if(error)
-                {
-                    pipeline.release();
-                    console.log(error);
-                }
-
-                if("obj.meetingId.userId.iceCandidate")
-                {
-                    while("obj.meetingId.userId.iceCandidate.length")
-                    {
-                        var candidate = obj.meetingId.userId.iceCandidate.shift();
-                        ClientWebrtcEndpoint.iceCandidate(candidate);
-                    }
-                }
-
-                ClientWebrtcEndpoint.on('OnIceCandidate',function(event){
-                    var candidate = kurento.getComplexType('<string not decide yet>')(event.candidate);
-                    const iceCandidate = {
-                        id : "<notation not decided yet>",
-                        iceCandidate : candidate
-                    }
-                    //socket.to("obj.meetingId.userId.").emit()
-                });
-            });//end of the ClientWebrtcEndpoints
-
-*/

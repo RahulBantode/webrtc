@@ -11,6 +11,7 @@ class KmsWebrtcMessageHandler {
     }
 
     handleKmsCallRequest(messege, socket, io) {
+        //console.log("Call request data : ", messege);
 
         const emitCallRequest = {
             type: "_KMS_CALL_REQUEST",
@@ -22,11 +23,11 @@ class KmsWebrtcMessageHandler {
         }
 
         this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
-
         socket.broadcast.emit("message", emitCallRequest);
     }
 
     async handleKmsCallResponse(messege, socket, io) {
+        //console.log("Call Response  : ", messege);
 
         //this part for displaying the the keys of the sessionStore.
         var sessionStore = this.sessionCache.getSessionStore();
@@ -39,17 +40,9 @@ class KmsWebrtcMessageHandler {
 
             //function is responsible for creating the pipeline for kms
 
-            await this.kmsWebrtcHelper.createPipeline(meetingId);
+            await this.kmsWebrtcHelper.createPipeline(meetingId, io);
 
-            // for (var icounter = 1; icounter <= participants.length; icounter++) {
-            //     for (var jcounter = 1; jcounter <= participants.length; jcounter++) {
-            //         if (icounter != jcounter) {
-            //             this.kmsWebrtcHelper.connectEndpoints(participants[icounter][userId].webrtcEndpoint
-            //                 , participants[jcounter][userId].webrtcEndpoint);
-            //         }
-            //     }
-            // }
-            console.log("After createpipeline function");
+            this.kmsWebrtcHelper.connectEndpoints();
 
             //generate the sdp answer for each user and send back to respective user.
             Object.keys(sessionStore[meetingId].participants).forEach(userId => {
@@ -62,17 +55,36 @@ class KmsWebrtcMessageHandler {
                         data: {
                             meetingId: meetingId,
                             userId: userId,
-                            kmsSdpAnswer: kmsSdpAnswer,
+                            sdpAnswer: {
+                                type: 'answer',
+                                sdp: kmsSdpAnswer
+                            }
                         }
                     }
 
-                    console.log("sdp answer : ", sdpAnswer.data.userId);
-                    socket.broadcast.to(userId).emit("message", sdpAnswer);
+                    //socket.broadcast.to(userId).emit("message", sdpAnswer);
+                    io.to(userId).emit("message", sdpAnswer);
+                    console.log("sdp answer (user Id): ", userId);
 
                 });//endof generatesdpanswer            
 
             });//end of the foreach
         }//end of main if
+    }
+
+    handleIceCandidate(messege, socket, io) {
+        // console.log("meetingId : ", messege.meetingId);
+        // console.log("userId :", messege.userId);
+        // console.log("icecandidate : ", messege.iceCandidate);
+        console.log("from user : ", messege);
+        let sessionStore = this.sessionCache.getSessionStore();
+
+        if (!sessionStore[messege.meetingId].participants[messege.userId].iceCandidateQueue) {
+            this.sessionCache.initializeIceCandidateQueue(messege.meetingId, messege.userId);
+        }
+
+        this.kmsWebrtcHelper.onIceCandidate(messege.meetingId, messege.userId, messege.iceCandidate);
+
     }
 }
 
