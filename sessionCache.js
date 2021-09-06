@@ -3,7 +3,6 @@
 
 var sessionStore = {};
 
-
 class SessionsCache {
     userList = [];
     usersMesseges = [];

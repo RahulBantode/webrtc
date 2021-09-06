@@ -182,4 +182,29 @@ MeetingsData =
 //         }
 //     }
 // }
+
+========================LOGIC OF CONNECTING THE USER'S ENDPOINTS=================================
+ // console.log("Length of the endpointList array : ", this.endpointList.length);
+        // if (this.endpointList.length == 0) {
+        //     console.log("Error : Unable to connect the enpoints");
+        // }
+        // else {
+        //     for (var agentCounter = 1; agentCounter <= this.endpointList.length; agentCounter++) {
+        //         for (var userCounter = 1; userCounter <= this.endpointList.length; userCounter++) {
+        //             if (agentCounter != userCounter) {
+        //                 console.log("AgentEndpoint Id is : ", this.endpointList[agentCounter].id);
+        //                 //console.log("UserEndpoint Id is : ", this.endpointList[userCounter].id);
+
+        //                 // this.endpointList[agentCounter].connect(this.endpointLis[userCounter], (error) => {
+        //                 //     if (error) {
+        //                 //         console.log(error);
+        //                 //     }//inner if completed
+
+        //                 console.log("connection created ")
+
+        //                 //});//connect statement completed
+        //             }//outer if completed
+        //         }//inner for completed
+        //     }//outer for completed
+        // }//else part completed
 */

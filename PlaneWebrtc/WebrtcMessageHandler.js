@@ -77,6 +77,13 @@ class WebrtcMessageHandler {
         }
     }
 
+    /*===========================================================================================
+        function - handleSdpAnswer()
+        class - WebrtcMessageHandler
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this handle the sdp answer of users and send back to the agent.
+    ==============================================================================================*/
     handleSdpAnswer(messege, socket, io) {
         const sdpAnswer =
         {
@@ -96,6 +103,13 @@ class WebrtcMessageHandler {
         }
     }
 
+    /*===========================================================================================
+        function - handleIceCandidateRequest()
+        class - WebrtcMessageHandler
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this handle the connected users ice candidate.
+    ==============================================================================================*/
     handleIceCandidateRequest(message, socket, io) {
         const iceCandidate =
         {

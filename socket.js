@@ -1,25 +1,28 @@
-const Helper = require("./Helper");  //It having the handler for chatting and joining the users.
+const ChatHelper = require("./PlaneWebrtc/ChatHelper");  //It having the handler for chatting and joining the users.
 const SessionsCache = require("./sessionCache"); //It maintain the log of the users and its messeges.
-const WebrtcMessageHandler = require("./WebrtcMessageHandler");  //It having the function of wwebrtc requests.
-const KmsWebrtcMessageHandler = require("./KmsWebrtcMessageHandler"); //Its having the function of kmswebrtc requests.
-const { Socket } = require("socket.io");
+const WebrtcMessageHandler = require("./PlaneWebrtc/WebrtcMessageHandler");  //It having the function of wwebrtc requests.
+const KmsWebrtcMessageHandler = require("./KmsWebrtc/KmsWebrtcMessageHandler"); //Its having the function of kmswebrtc requests.
+//const { Socket } = require("socket.io");
 
 class socketHandler {
     io;
-    HelperObj;
-    cacheObj;
+    chatHelper;
+    sessionCache;
     webrtcMessageHandler;
     kmsWebrtcMessageHandler;
 
     constructor(io) {
         this.io = io;
-        this.HelperObj = new Helper();
-        this.cacheObj = new SessionsCache();
+        this.chatHelper = new ChatHelper();
+        this.sessionCache = new SessionsCache();
         this.webrtcMessageHandler = new WebrtcMessageHandler();
         this.kmsWebrtcMessageHandler = new KmsWebrtcMessageHandler();
     }
 
-
+    //================================================================================
+    //init() - The method of socketHandler class which is used to create the socket 
+    //         connection.
+    //================================================================================
     init() {
         this.io.on("connection", (socket) => {
             /*===========================================================================
@@ -31,43 +34,52 @@ class socketHandler {
             socket.on("message", (msg) => {
                 switch (msg.type) {
                     case 'JOIN':
-                        this.HelperObj.handleJoinMsg(msg.data, socket, this.io);
+                        //handleJoinMsg():- this function used to handler all the joined user to room
+                        this.chatHelper.handleJoinMsg(msg.data, socket, this.io);
                         break;
 
                     case 'CHAT':
-                        this.HelperObj.handleChatMsg(msg.data, socket, this.io);
+                        //handleChatMsg():- this function used to handle the messeges comes from each joined user.
+                        this.chatHelper.handleChatMsg(msg.data, socket, this.io);
                         break;
 
-
                     case 'CALL_REQUEST':
+                        //handleCallRequest():- this function is used to handle plane webrtc call request from agent.
                         this.webrtcMessageHandler.handleCallRequest(msg.data, socket, this.io);
                         break;
 
                     case 'CALL_RESPONSE':
+                        //handleCallResponse():- this function is used to handle plane webrtc call response from user.
                         this.webrtcMessageHandler.handleCallResponse(msg.data, socket, this.io);
                         break;
 
                     case 'SDP_OFFER':
+                        //handleSdpOfferRequest():- this function is used to handle sdp offer request from agent
                         this.webrtcMessageHandler.handleSdpOfferRequest(msg.data, socket, this.io);
                         break;
 
                     case 'SDP_ANSWER':
+                        //handleSdpAnswer():- this function is used to handle sdp answer comes from user.
                         this.webrtcMessageHandler.handleSdpAnswer(msg.data, socket, this.io);
                         break;
 
                     case 'ICE_CANDIDATE':
+                        //handleIceCandidateRequest():- this function is used to handle ice candidate request.
                         this.webrtcMessageHandler.handleIceCandidateRequest(msg.data, socket, this.io);
                         break;
 
                     case 'KMS_CALL_REQUEST':
+                        //handleKmsCallRequest():- this function is used to handle the kms call request comes from agent.
                         this.kmsWebrtcMessageHandler.handleKmsCallRequest(msg.data, socket, this.io);
                         break;
 
                     case 'KMS_CALL_RESPONSE':
+                        //handleKmsCallResponse():- this function is used to handle kms call response comes from users.
                         this.kmsWebrtcMessageHandler.handleKmsCallResponse(msg.data, socket, this.io);
                         break;
 
                     case 'KMS_ICE_CANDIDATE':
+                        //handleIceCandidate() : this function is used to handle the ice Candidate.
                         this.kmsWebrtcMessageHandler.handleIceCandidate(msg.data, socket, this.io);
                         break;
 
