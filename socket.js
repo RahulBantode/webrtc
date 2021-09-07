@@ -2,7 +2,7 @@ const ChatHelper = require("./PlaneWebrtc/ChatHelper");  //It having the handler
 const SessionsCache = require("./sessionCache"); //It maintain the log of the users and its messeges.
 const WebrtcMessageHandler = require("./PlaneWebrtc/WebrtcMessageHandler");  //It having the function of wwebrtc requests.
 const KmsWebrtcMessageHandler = require("./KmsWebrtc/KmsWebrtcMessageHandler"); //Its having the function of kmswebrtc requests.
-//const { Socket } = require("socket.io");
+
 
 class socketHandler {
     io;
@@ -102,12 +102,3 @@ class socketHandler {
 
 
 module.exports = socketHandler;
-
-
-
-
-
-
-
-//let clientId = socket.id ; //it will gives an socket id.
-//io.sockets.in('user1@example.com').emit('new_msg', {msg: 'hello'});

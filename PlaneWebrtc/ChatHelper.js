@@ -57,9 +57,6 @@ class Helper {
 
     //function handling the chat between the clients
     handleChatMsg(chatMessage, socket, io) {
-        //this is the reply object which consist the username who sends the messege and
-        //data which sends . (and then this data is displayed to all the connected clients.)
-
         const chatReply =
         {
             type: '_CHAT',
@@ -89,11 +86,7 @@ class Helper {
                 }
 
             }
-
             //console.log("The messege is : ",chatReply);
-
-
-
         }
 
     }//chathandler function end

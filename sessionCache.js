@@ -1,13 +1,14 @@
 
-//global declaration of the userlist array.
-
+//global declaration of the sessionStore object
 var sessionStore = {};
 
-class SessionsCache {
-    userList = [];
-    usersMesseges = [];
-    meetingId;
+//global declaration of the userList and userMesseges array. 
+var userList = [];
+var usersMesseges = [];
 
+class SessionsCache {
+
+    meetingId;
 
     //setter for meetingId
     setMeetingId(meetingId) {
@@ -21,9 +22,7 @@ class SessionsCache {
 
     //this is responsible for saving the user details
     saveUserDetails(meetingId, userId, userName, sdpOffer) {
-
         let meetingStore = sessionStore[meetingId];
-
         let userDetails = {};
 
         if (!meetingStore) {
@@ -42,6 +41,7 @@ class SessionsCache {
 
     }
 
+    //getter of the sessionStore object.
     getSessionStore() {
         return sessionStore;
     }
@@ -50,8 +50,8 @@ class SessionsCache {
     setMediaPipeline(meetingId, webrtcPipeline) {
         //console.log("webrtcpipeline : ", webrtcPipeline.id);
         sessionStore[meetingId].webrtcPipeline = webrtcPipeline;
-
     }
+
     //this function set the userEndpoint into the sessioncache
     setUserEndpoints(meetingId, userId, webrtcEndpoints) {
         //console.log("Endpoint from sessioncache : ", webrtcEndpoints);
@@ -62,16 +62,18 @@ class SessionsCache {
     initializeIceCandidateQueue(meetingId, userId) {
         sessionStore[meetingId].participants[userId].iceCandidateQueue = [];
     }
-    //reponsible for get the user data.
+
+    //reponsible for set the user data.
     setUserData(users) {
-        this.userList.push(users);
+        userList.push(users);
     }
 
     //responsible for the storing the messeges of users with respective their names.
     setUsersChat(usersChat) {
-        this.usersMesseges.push(usersChat);
+        usersMesseges.push(usersChat);
     }
 
+    //getter of the userList Array
     getArray() {
         return userList;
     }

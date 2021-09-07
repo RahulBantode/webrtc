@@ -23,7 +23,9 @@ class WebrtcMessageHandler {
         if (messege.meetingId) {
             //socket.to(messege.meetingId).emit("messege",emit); //
             socket.broadcast.emit("message", emitResponse);
+            console.log("Agents request : ", emitResponse);
         }
+
     }
 
     /*===========================================================================================
@@ -49,6 +51,7 @@ class WebrtcMessageHandler {
 
         if (messege.meetingId) {
             socket.broadcast.emit("message", emitResponse);
+            console.log("User's response : ", emitResponse);
         }
     }
 
@@ -74,6 +77,7 @@ class WebrtcMessageHandler {
 
         if (messege.meetingId) {
             socket.broadcast.emit("message", sdpOffer);
+            console.log("Sdp offer (Agent) : ", sdpOffer);
         }
     }
 
@@ -100,6 +104,7 @@ class WebrtcMessageHandler {
 
         if (messege.meetingId) {
             socket.broadcast.emit("message", sdpAnswer);
+            console.log("Sdp answer (User) : ", sdpAnswer);
         }
     }
 
@@ -124,6 +129,8 @@ class WebrtcMessageHandler {
         }
 
         socket.broadcast.emit("message", iceCandidate);
+        console.log(`Sharing of iceCandidate : ${iceCandidate}`);
+
     }
 }
 
