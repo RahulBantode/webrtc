@@ -16,9 +16,7 @@ class KmsWebrtcMessageHandler {
         parameter :- messege(data comes from agent) , socket , io
     ========================================================================================================*/
     handleKmsCallRequest(messege, socket, io) {
-        console.log("=======================================================================");
         console.log("STEP :- 3 (generate call resquest)");
-        console.log("=======================================================================");
 
         const emitCallRequest = {
             type: "_KMS_CALL_REQUEST",
@@ -32,9 +30,8 @@ class KmsWebrtcMessageHandler {
         this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
         socket.broadcast.emit("message", emitCallRequest);
 
-        console.log("=======================================================================");
         console.log("STEP :- 4 (emit call request)");
-        console.log("=======================================================================");
+
     }
 
 
@@ -99,9 +96,7 @@ class KmsWebrtcMessageHandler {
                     io.to(userId).emit("message", sdpAnswer);
                     console.log("sdp answer (user Id): ", userId);
 
-                    console.log("=======================================================================");
                     console.log("STEP : 10/11 (emit the sdp answer to each users.)");
-                    console.log("=======================================================================");
 
                 });//endof generatesdpanswer            
 
@@ -116,9 +111,7 @@ class KmsWebrtcMessageHandler {
          parameter :- messege(data comes from agent) , socket , io                       
     =======================================================================================================*/
     handleIceCandidate(messege, socket, io) {
-        console.log("=======================================================================");
         console.log("STEP : 13/14 (got ice Candidate from users)");
-        console.log("=======================================================================");
 
         console.log(`From users to kms : UserId : ${messege.userId} : IceCandidate : ${messege.iceCandidate}`);
         let sessionStore = this.sessionCache.getSessionStore();
