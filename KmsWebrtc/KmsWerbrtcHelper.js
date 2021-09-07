@@ -1,5 +1,4 @@
 
-//const e = require("cors");
 const kurento = require("kurento-client");
 const SessionCache = require("../sessionCache");
 
@@ -33,6 +32,10 @@ class KmsPipeline {
     //createPipeline() :- this function is used to create the pipeline on kms server.
     //==================================================================================================
     async createPipeline(meetingId, io) {
+        console.log("=======================================================================");
+        console.log("STEP : 7 (get Kurento client , create piepeline, create endpoints");
+        console.log("========================================================================");
+
         var sessionStore = this.sessionCache.getSessionStore();
 
         return new Promise((resolve, reject) => {
@@ -118,14 +121,14 @@ class KmsPipeline {
                         data: {
                             meetingId: meetingId,
                             userId: userId,
-                            candidate: {
-                                type: "iceCandidate",
-                                iceCandidate: iceCandidate
-                            }
+                            iceCandidate: iceCandidate
                         }
                     }
                     io.to(userId).emit("message", candidate);
-                    console.log("icecandidate send to the user : ", candidate);
+
+                    console.log("=======================================================================");
+                    console.log("STEP : 17/18/19 (sending ice Candidate KMS to each users)");
+                    console.log("========================================================================");
                 });//end of the endpoint on icecandidate event.
 
                 resolve(endPoint);
@@ -137,6 +140,10 @@ class KmsPipeline {
     //connectEndpoints() :- this function is used for connecting users endpoints with each others.
     //==================================================================================================
     connectEndpoints() {
+        console.log("=======================================================================");
+        console.log("STEP : 8 (connect endpoints)");
+        console.log("========================================================================");
+
         this.endpointList[0].connect(this.endpointList[1], (error) => {
             if (error) {
                 console.log(error)
@@ -160,6 +167,9 @@ class KmsPipeline {
     //                  queue.
     //==================================================================================================
     onIceCandidate(meetingId, userId, iceCandidate) {
+        console.log("=======================================================================");
+        console.log("STEP : 15/16 (add Ice candidate into Endpoints/Icecandidate Queue)");
+        console.log("=======================================================================");
 
         var iceCandidate = kurento.getComplexType('IceCandidate')(iceCandidate);
         let sessionStore = this.sessionCache.getSessionStore();
@@ -178,6 +188,9 @@ class KmsPipeline {
     //                       joined user and the send the sdp answer to that user from kms server.
     //==================================================================================================
     generateSdpAnswer(userId, meetingId, callback) {
+        console.log("=======================================================================");
+        console.log("STEP : 9 (process offer and generate sdp answer)");
+        console.log("=======================================================================");
 
         let sessionStore = this.sessionCache.getSessionStore();
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
