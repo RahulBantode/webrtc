@@ -119,6 +119,7 @@ class KmsPipeline {
                         data: {
                             meetingId: meetingId,
                             userId: userId,
+                            userName: sessionStore[meetingId].participants[userId].userName,
                             iceCandidate: iceCandidate
 
                         }
@@ -152,10 +153,9 @@ class KmsPipeline {
                 console.log(error);
             }
             console.log("Users : Endpoint is connected ");
-        })
+        });
 
     }//connect endpoint function completed
-
 
     //==================================================================================================
     //onIceCandidate :- Function used to handle the icecandidate and used to add the icecandidate to 
@@ -178,7 +178,7 @@ class KmsPipeline {
     }
 
     //==================================================================================================
-    //generateSdpAnswer() :- this function is used to process the sdp offer which are comes from each
+    // generateSdpAnswer() :- this function is used to process the sdp offer which are comes from each
     //                       joined user and the send the sdp answer to that user from kms server.
     //==================================================================================================
     generateSdpAnswer(userId, meetingId, callback) {

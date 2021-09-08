@@ -185,26 +185,38 @@ MeetingsData =
 
 ========================LOGIC OF CONNECTING THE USER'S ENDPOINTS=================================
  // console.log("Length of the endpointList array : ", this.endpointList.length);
+       for (var i = 0; i <= this.endpointList.length; i++) {
+        //     console.log("Endpoint list are : ", i, " : ", this.endpointList[i].id);
+        // }
+
         // if (this.endpointList.length == 0) {
         //     console.log("Error : Unable to connect the enpoints");
         // }
         // else {
         //     for (var agentCounter = 1; agentCounter <= this.endpointList.length; agentCounter++) {
+        //         //console.log("Agent : ", this.endpointList[agentCounter].id);
         //         for (var userCounter = 1; userCounter <= this.endpointList.length; userCounter++) {
-        //             if (agentCounter != userCounter) {
-        //                 console.log("AgentEndpoint Id is : ", this.endpointList[agentCounter].id);
-        //                 //console.log("UserEndpoint Id is : ", this.endpointList[userCounter].id);
+        //             if (agentCounter == userCounter) {
+        //                 console.log("Inside the if");
+        //             }
+        //             else {
+        //                 var a = this.endpointList[agentCounter];
+        //                 var u = this.endpointList[userCounter];
+
+        //                 console.log("AgentEndpoint Id is : ", agentCounter, " : ", a);
+        //                 console.log("UserEndpoint Id is : ", userCounter, " : ", u);
 
         //                 // this.endpointList[agentCounter].connect(this.endpointLis[userCounter], (error) => {
         //                 //     if (error) {
         //                 //         console.log(error);
         //                 //     }//inner if completed
 
-        //                 console.log("connection created ")
+        //                 //     console.log("connection created ")
 
-        //                 //});//connect statement completed
+        //                 // });//connect statement completed
         //             }//outer if completed
         //         }//inner for completed
         //     }//outer for completed
         // }//else part completed
+
 */

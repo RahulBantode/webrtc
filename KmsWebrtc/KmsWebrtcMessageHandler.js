@@ -86,6 +86,7 @@ class KmsWebrtcMessageHandler {
                         data: {
                             meetingId: meetingId,
                             userId: userId,
+                            userName: sessionStore[meetingId].participants[userId].userName,
                             sdpAnswer: {
                                 type: 'answer',
                                 sdp: kmsSdpAnswer
@@ -94,7 +95,7 @@ class KmsWebrtcMessageHandler {
                     }
 
                     io.to(userId).emit("message", sdpAnswer);
-                    console.log("sdp answer (user Id): ", userId);
+                    console.log("sdp answer (user Id ): ", userId, "userName : ", sdpAnswer.data.userName);
 
                     console.log("STEP : 10/11 (emit the sdp answer to each users.)");
 
