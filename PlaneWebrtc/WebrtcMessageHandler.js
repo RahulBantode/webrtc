@@ -9,11 +9,9 @@ class WebrtcMessageHandler {
     ==============================================================================================*/
     handleCallRequest(messege, socket, io) {
 
-        const emitResponse =
-        {
+        const emitResponse = {
             type: '_CALL_REQUEST',
-            data:
-            {
+            data: {
                 meetingId: messege.meetingId,
                 userName: messege.userName,
                 userId: messege.userId
@@ -37,22 +35,29 @@ class WebrtcMessageHandler {
                          and response send back to the agent.
     ==============================================================================================*/
     handleCallResponse(messege, socket, io) {
-        const emitResponse =
-        {
-            type: "_CALL_RESPONSE",
-            data:
-            {
-                meetingId: messege.meetingId,
-                userId: messege.userId,
-                callStatus: messege.callStatus,
-                userName: messege.userName
+        if (messege.callStatus == 1) {
+            const emitResponse = {
+                type: "_CALL_RESPONSE",
+                data: {
+                    meetingId: messege.meetingId,
+                    userId: messege.userId,
+                    callStatus: messege.callStatus,
+                    userName: messege.userName
+                }
             }
-        }
-
-        if (messege.meetingId) {
             socket.broadcast.emit("message", emitResponse);
             console.log("User's response : ", emitResponse);
-        }
+        }//end of if
+        else {
+            const callRejected = {
+                type: "_CALL_RESPONSE",
+                data: {
+                    id: "rejected",
+                    messege: "Call is declined"
+                }
+            }
+            socket.broadcast.emit("message", callRejected);
+        }//end of else.
     }
 
     /*===========================================================================================
@@ -63,11 +68,9 @@ class WebrtcMessageHandler {
         functionality :- this handle the request (SDP) which comes from agent to all the client.
     ==============================================================================================*/
     handleSdpOfferRequest(messege, socket, io) {
-        const sdpOffer =
-        {
+        const sdpOffer = {
             type: "_SDP_OFFER",
-            data:
-            {
+            data: {
                 meetingId: messege.meetingId,
                 userId: messege.userId,
                 userName: messege.userName,
@@ -75,10 +78,9 @@ class WebrtcMessageHandler {
             }
         }
 
-        if (messege.meetingId) {
-            socket.broadcast.emit("message", sdpOffer);
-            console.log("Sdp offer (Agent) : ", sdpOffer);
-        }
+        socket.broadcast.emit("message", sdpOffer);
+        console.log("Sdp offer (Agent) : ", sdpOffer);
+
     }
 
     /*===========================================================================================
@@ -89,11 +91,9 @@ class WebrtcMessageHandler {
         functionality :- this handle the sdp answer of users and send back to the agent.
     ==============================================================================================*/
     handleSdpAnswer(messege, socket, io) {
-        const sdpAnswer =
-        {
+        const sdpAnswer = {
             type: "_SDP_ANSWER",
-            data:
-            {
+            data: {
                 meetingId: messege.meetingId,
                 userId: messege.userId,
                 userName: messege.userName,
@@ -101,11 +101,9 @@ class WebrtcMessageHandler {
             }
         }
 
+        socket.broadcast.emit("message", sdpAnswer);
+        console.log("Sdp answer (User) : ", sdpAnswer);
 
-        if (messege.meetingId) {
-            socket.broadcast.emit("message", sdpAnswer);
-            console.log("Sdp answer (User) : ", sdpAnswer);
-        }
     }
 
     /*===========================================================================================
@@ -116,12 +114,10 @@ class WebrtcMessageHandler {
         functionality :- this handle the connected users ice candidate.
     ==============================================================================================*/
     handleIceCandidateRequest(message, socket, io) {
-        const iceCandidate =
-        {
+        const iceCandidate = {
             type: "_ICE_CANDIDATE",
-            data:
-            {
-                //meetingId : message.meetingId,
+            data: {
+                meetingId: message.meetingId,
                 userId: message.userId,
                 userName: message.userName,
                 iceCandidate: message.iceCandidate

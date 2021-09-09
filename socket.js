@@ -80,7 +80,12 @@ class socketHandler {
 
                     case 'KMS_ICE_CANDIDATE':
                         //handleIceCandidate() : this function is used to handle the ice Candidate.
-                        this.kmsWebrtcMessageHandler.handleIceCandidate(msg.data, socket, this.io);
+                        this.kmsWebrtcMessageHandler.handleIceCandidate(msg.data);
+                        break;
+
+                    case 'KMS_END_CALL':
+                        //handleKmsEndCall() :- this function is used to handle the working after end call.
+                        this.kmsWebrtcMessageHandler.handleKmsEndCall(msg.data, socket, this.io);
                         break;
 
                     default:

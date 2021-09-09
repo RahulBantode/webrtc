@@ -103,15 +103,31 @@ class KmsWebrtcMessageHandler {
 
             });//end of the foreach
         }//end of main if
+        //================================================================================================
+        //else part consist working if call are rejected
+        //================================================================================================
+        else {
+            const rejectCall = {
+                type: "_KMS_CALL_RESPONSE",
+                data: {
+                    userId: messege.userId,
+                    userName: messege.userName,
+                    id: "rejected",
+                    messege: "This user reject the call"
+                }
+            }
+            delete sessionStore[meetingId].participants;
+            socket.broadcast.emit("message", rejectCall);
+        }
     }
 
     /*=====================================================================================================
         handleIceCandidate() :- This function is used to handle the iceCandidate comes from each user to the
-                               server, and server pass it to the kms and kms add this IceCandidate and 
-                               generate it own iceCandidate for each user and send back to the each user
+                                server, and server pass it to the kms and kms add this IceCandidate and 
+                                generate it own iceCandidate for each user and send back to the each user
          parameter :- messege(data comes from agent) , socket , io                       
     =======================================================================================================*/
-    handleIceCandidate(messege, socket, io) {
+    handleIceCandidate(messege) {
         console.log("STEP : 13/14 (got ice Candidate from users)");
 
         console.log(`From users to kms : UserId : ${messege.userId} : IceCandidate : ${messege.iceCandidate}`);
@@ -132,6 +148,30 @@ class KmsWebrtcMessageHandler {
         //parameter :- meetingId,userId,iceCandidate
         //================================================================================================
         this.kmsWebrtcHelper.onIceCandidate(messege.meetingId, messege.userId, messege.iceCandidate);
+    }
+
+
+    /*=====================================================================================================
+        handleKmsEndCall() :- This function is used to release the pipeline, endpoints and participants
+                              who are joined to the meeting, on the end call action.
+         parameter :- messege(data comes from agent) , socket , io                       
+    =======================================================================================================*/
+    handleKmsEndCall(messege, socket, io) {
+        let sessionStore = this.sessionCache.getSessionStore();
+        let meetingId = this.sessionCache.getMeetingId();
+
+        if (sessionStore[meetingId].webrtcPipeline) {
+            sessionStore[meetingId].webrtcPipeline.release();
+            delete sessionStore[meetingId].webrtcPipeline;
+            delete sessionStore[meetingId].participants;
+            console.log("MediaPipeline , Endpoints , and participants log are deleted.");
+
+            const endCall = {
+                type: "_KMS_END_CALL",
+                messege: "Call is ended"
+            }
+            socket.broadcast.emit("message", endCall);
+        }
 
     }
 }
