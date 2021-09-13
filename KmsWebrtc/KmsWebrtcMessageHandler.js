@@ -160,9 +160,9 @@ class KmsWebrtcMessageHandler {
         let meetingId = this.sessionCache.getMeetingId();
 
         if (sessionStore[meetingId].webrtcPipeline) {
-            sessionStore[meetingId].webrtcPipeline.release();
-            delete sessionStore[meetingId].webrtcPipeline;
-            console.log("MediaPipeline , Endpoints  log are deleted.");
+            //sessionStore[meetingId].webrtcPipeline.release();
+            // delete sessionStore[meetingId].webrtcPipeline;
+            // console.log("MediaPipeline , Endpoints  log are deleted.");
 
             const endCall = {
                 type: "_KMS_CALL_ENDED",
@@ -174,6 +174,7 @@ class KmsWebrtcMessageHandler {
                 }
             }
             socket.broadcast.emit("message", endCall);
+            console.log("kms call is ended");
         }
 
     }

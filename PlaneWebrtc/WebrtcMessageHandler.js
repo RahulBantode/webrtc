@@ -147,6 +147,7 @@ class WebrtcMessageHandler {
             }
         }
         socket.broadcast.emit("message", callEnd);
+        console.log("Call is ended");
     }
 }
 
