@@ -68,6 +68,11 @@ class socketHandler {
                         this.webrtcMessageHandler.handleIceCandidateRequest(msg.data, socket, this.io);
                         break;
 
+                    case 'CALL_ENDED':
+                        //handleCallEnd():- this function pass the plane webrtc call end messege to another users.
+                        this.webrtcMessageHandler.handleCallEnd(msg.data, socket, this.io);
+                        break;
+
                     case 'KMS_CALL_REQUEST':
                         //handleKmsCallRequest():- this function is used to handle the kms call request comes from agent.
                         this.kmsWebrtcMessageHandler.handleKmsCallRequest(msg.data, socket, this.io);
@@ -83,8 +88,8 @@ class socketHandler {
                         this.kmsWebrtcMessageHandler.handleIceCandidate(msg.data);
                         break;
 
-                    case 'KMS_END_CALL':
-                        //handleKmsEndCall() :- this function is used to handle the working after end call.
+                    case 'KMS_CALL_ENDED':
+                        //handleKmsEndCall() :- this function is used to handle the working after end call(KMS).
                         this.kmsWebrtcMessageHandler.handleKmsEndCall(msg.data, socket, this.io);
                         break;
 

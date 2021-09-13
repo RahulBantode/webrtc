@@ -128,6 +128,26 @@ class WebrtcMessageHandler {
         console.log(`Sharing of iceCandidate : ${iceCandidate}`);
 
     }
+
+    /*===========================================================================================
+        function - handleCallEnd()
+        class - WebrtcMessageHandler
+        parameter - messege,socket,io (3)
+        return - none
+        functionality :- this function pass the call end messege to the another users.
+    ==============================================================================================*/
+    handleCallEnd(message, socket, io) {
+        const callEnd = {
+            type: "_CALL_ENDED",
+            data: {
+                meetingId: message.meetingId,
+                userId: message.userId,
+                userName: message.userName,
+                messege: "plane webrtc call ended"
+            }
+        }
+        socket.broadcast.emit("message", callEnd);
+    }
 }
 
 module.exports = WebrtcMessageHandler;

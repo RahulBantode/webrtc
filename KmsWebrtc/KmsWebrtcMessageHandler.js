@@ -167,8 +167,13 @@ class KmsWebrtcMessageHandler {
             console.log("MediaPipeline , Endpoints , and participants log are deleted.");
 
             const endCall = {
-                type: "_KMS_END_CALL",
-                messege: "Call is ended"
+                type: "_KMS_CALL_ENDED",
+                data: {
+                    meetingId: messege.meetingId,
+                    userId: messege.userId,
+                    userName: messege.userName,
+                    messege: "Kms webrtc call ended"
+                }
             }
             socket.broadcast.emit("message", endCall);
         }
