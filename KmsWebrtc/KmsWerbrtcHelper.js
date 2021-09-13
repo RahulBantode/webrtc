@@ -186,6 +186,7 @@ class KmsPipeline {
 
         let sessionStore = this.sessionCache.getSessionStore();
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
+        console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
         sessionStore[meetingId].participants[userId].webrtcEndpoints.processOffer(sdpOffer.sdp, callback);
 
         //==================================================================================================

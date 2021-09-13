@@ -159,10 +159,22 @@ class KmsWebrtcMessageHandler {
         let sessionStore = this.sessionCache.getSessionStore();
         let meetingId = this.sessionCache.getMeetingId();
 
+        console.log("********************************************[ KMS CALL END  (start)]********************************************");
         if (sessionStore[meetingId].webrtcPipeline) {
-            //sessionStore[meetingId].webrtcPipeline.release();
-            // delete sessionStore[meetingId].webrtcPipeline;
-            // console.log("MediaPipeline , Endpoints  log are deleted.");
+
+            // Object.keys(sessionStore[meetingId].participants).forEach(userId => {
+            //     sessionStore[meetingId].participants[userId].webrtcEndpoints.release();
+            //     this.sessionCache.setUserEndpoints(meetingId, userId, null);
+            //     //this.sessionCache.setSdpOfferNull(meetingId, userId);
+            //     console.log(`Endpoints of ${userId} is deleted :- ${sessionStore[meetingId].participants[userId].webrtcEndpoints}`);
+            //     console.log("Inside the loop");
+            // });
+
+            // console.log("outside the loop");
+
+            sessionStore[meetingId].webrtcPipeline.release();
+            this.sessionCache.setMediaPipeline(meetingId, null);
+            console.log("Webrtcpipeline are deleted");
 
             const endCall = {
                 type: "_KMS_CALL_ENDED",
@@ -174,7 +186,7 @@ class KmsWebrtcMessageHandler {
                 }
             }
             socket.broadcast.emit("message", endCall);
-            console.log("kms call is ended");
+            console.log("********************************************[ KMS CALL END (end)]********************************************");
         }
 
     }

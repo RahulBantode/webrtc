@@ -1,30 +1,30 @@
 
-// const data = {
-//     1212: {
-//         participants: {
-//             1: {
-//                 userName: "Rahul",
-//                 mobile: "8624924587",
-//                 type: "admin"
-//             },
-//             2: {
-//                 userName: "kunal",
-//                 mobile: "8624924587",
-//                 type: "customer"
-//             },
-//             3: {
-//                 userName: "Nitin",
-//                 mobile: "8624924587",
-//                 type: "admin/student"
-//             },
+const data = {
+    1212: {
+        participants: {
+            1: {
+                userName: "Rahul",
+                mobile: "8624924587",
+                type: "admin"
+            },
+            2: {
+                userName: "kunal",
+                mobile: "8624924587",
+                type: "customer"
+            },
+            3: {
+                userName: "Nitin",
+                mobile: "8624924587",
+                type: "admin/student"
+            },
 
-//         }
-//     }
-// }
+        }
+    }
+}
 
-// console.log("details : \n", data[1212]);
-// delete data[1212].participants;
-// console.log("data : ", data[1212]);
+console.log("details : \n", data[1212]);
+data[1212].participants = null;
+console.log("data : ", data[1212]);
 
 // sessionStore = {}
 // let meetingId = 122;
