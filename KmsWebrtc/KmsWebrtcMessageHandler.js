@@ -116,7 +116,6 @@ class KmsWebrtcMessageHandler {
                     messege: "This user reject the call"
                 }
             }
-            delete sessionStore[meetingId].participants;
             socket.broadcast.emit("message", rejectCall);
         }
     }
@@ -163,8 +162,7 @@ class KmsWebrtcMessageHandler {
         if (sessionStore[meetingId].webrtcPipeline) {
             sessionStore[meetingId].webrtcPipeline.release();
             delete sessionStore[meetingId].webrtcPipeline;
-            delete sessionStore[meetingId].participants;
-            console.log("MediaPipeline , Endpoints , and participants log are deleted.");
+            console.log("MediaPipeline , Endpoints  log are deleted.");
 
             const endCall = {
                 type: "_KMS_CALL_ENDED",
