@@ -37,7 +37,7 @@ class SessionsCache {
         userDetails.userName = userName;
         userDetails.sdpOffer = sdpOffer;
 
-        console.log("Users data from session cache :", sessionStore);
+        // console.log("Users data from session cache :", JSON.stringify(sessionStore));
 
     }
 
@@ -49,7 +49,11 @@ class SessionsCache {
     //this function set the mediaPipeline into the sessioncache.
     setMediaPipeline(meetingId, webrtcPipeline) {
         sessionStore[meetingId].webrtcPipeline = webrtcPipeline;
-        console.log("webrtcpipeline from sessionCache : ", sessionStore[meetingId].webrtcPipeline);
+        //console.log("webrtcpipeline from sessionCache : ", sessionStore[meetingId].webrtcPipeline);
+    }
+
+    setKurentoClient(meetingId, kurentoClient) {
+        sessionStore[meetingId].kurentoClient = kurentoClient;
     }
 
     //this function set the userEndpoint into the sessioncache
@@ -81,6 +85,22 @@ class SessionsCache {
     //getter of the userList Array
     getArray() {
         return userList;
+    }
+
+    cleanupKMSWebRTCData(meetingId) {
+        let sessionDetails = sessionStore[meetingId];
+
+        console.log("********************************************Cache cleanup********************************************");
+        if (sessionDetails.webrtcPipeline) {
+
+            Object.keys(sessionDetails.participants).forEach(participantId => {
+                delete sessionDetails.participants[participantId].webrtcEndpoints;
+                delete sessionDetails.participants[participantId].sdpOffer;
+            });
+            delete sessionDetails.webrtcPipeline;
+            delete sessionDetails.kurentoClient;
+            console.log(`sesscionCache for ${meetingId} :- ${JSON.stringify(sessionDetails)}`);
+        }
     }
 }
 

@@ -32,6 +32,7 @@ class socketHandler {
             console.log("Socket connection established");
 
             socket.on("message", (msg) => {
+                // console.log("messege : ", msg);
                 switch (msg.type) {
                     case 'JOIN':
                         //handleJoinMsg():- this function used to handler all the joined user to room

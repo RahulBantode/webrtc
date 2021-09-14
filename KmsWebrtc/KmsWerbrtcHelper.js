@@ -34,7 +34,7 @@ class KmsPipeline {
     async createPipeline(meetingId, io) {
         console.log("STEP : 7 (get Kurento client , create piepeline, create endpoints");
 
-        var sessionStore = this.sessionCache.getSessionStore();
+        let sessionStore = this.sessionCache.getSessionStore();
 
         return new Promise((resolve, reject) => {
             this.getKurentoClient((error, kurentoClient) => {
@@ -57,6 +57,9 @@ class KmsPipeline {
                     //function is used to save the mediaPipeline to the sessionCache class
                     //======================================================================================
                     this.sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
+                    this.sessionCache.setKurentoClient(meetingId, kurentoClient);
+
+                    console.log("********************* Users data from session cache :", JSON.stringify(sessionStore[meetingId]));
 
                     //==============================================================================================
                     //This piece of code used to create the endpoints for each user after creating of mediaPipeline.
@@ -186,9 +189,9 @@ class KmsPipeline {
 
         let sessionStore = this.sessionCache.getSessionStore();
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
-        console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
+        //console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
         sessionStore[meetingId].participants[userId].webrtcEndpoints.processOffer(sdpOffer.sdp, callback);
-
+        //console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
         //==================================================================================================
         //gatherCandidate - this is inbuilt function called after processOffer function.
         //==================================================================================================
@@ -198,6 +201,21 @@ class KmsPipeline {
             }
         });
 
+    }
+
+    releaseKMSResources(sessionDetails) {
+
+        console.log("********************************************Cleaning up KMS Resources********************************************");
+        if (sessionDetails.webrtcPipeline) {
+
+            Object.keys(sessionDetails.participants).forEach(participantId => {
+                sessionDetails.participants[participantId].webrtcEndpoints.release();
+                sessionDetails.participants[participantId].iceCandidateQueue = [];
+            });
+
+            sessionDetails.webrtcPipeline.release();
+            sessionDetails.kurentoClient.close();
+        }
     }
 }
 

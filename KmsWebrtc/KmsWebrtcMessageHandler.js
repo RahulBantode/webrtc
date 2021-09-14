@@ -157,38 +157,23 @@ class KmsWebrtcMessageHandler {
     =======================================================================================================*/
     handleKmsEndCall(messege, socket, io) {
         let sessionStore = this.sessionCache.getSessionStore();
-        let meetingId = this.sessionCache.getMeetingId();
+        let meetingId = messege.meetingId;
 
         console.log("********************************************[ KMS CALL END  (start)]********************************************");
-        if (sessionStore[meetingId].webrtcPipeline) {
+        this.kmsWebrtcHelper.releaseKMSResources(sessionStore[meetingId]);
+        this.sessionCache.cleanupKMSWebRTCData(meetingId);
 
-            // Object.keys(sessionStore[meetingId].participants).forEach(userId => {
-            //     sessionStore[meetingId].participants[userId].webrtcEndpoints.release();
-            //     this.sessionCache.setUserEndpoints(meetingId, userId, null);
-            //     //this.sessionCache.setSdpOfferNull(meetingId, userId);
-            //     console.log(`Endpoints of ${userId} is deleted :- ${sessionStore[meetingId].participants[userId].webrtcEndpoints}`);
-            //     console.log("Inside the loop");
-            // });
-
-            // console.log("outside the loop");
-
-            sessionStore[meetingId].webrtcPipeline.release();
-            this.sessionCache.setMediaPipeline(meetingId, null);
-            console.log("Webrtcpipeline are deleted");
-
-            const endCall = {
-                type: "_KMS_CALL_ENDED",
-                data: {
-                    meetingId: messege.meetingId,
-                    userId: messege.userId,
-                    userName: messege.userName,
-                    messege: "Kms webrtc call ended"
-                }
+        const endCall = {
+            type: "_KMS_CALL_ENDED",
+            data: {
+                meetingId: messege.meetingId,
+                userId: messege.userId,
+                userName: messege.userName,
+                messege: "Kms webrtc call ended"
             }
-            socket.broadcast.emit("message", endCall);
-            console.log("********************************************[ KMS CALL END (end)]********************************************");
         }
-
+        socket.broadcast.emit("message", endCall);
+        console.log("********************************************[ KMS CALL END (end)]************************************************");
     }
 }
 
