@@ -68,7 +68,15 @@ class KmsWebrtcMessageHandler {
             //working :- function is used to connect all the users endpoints which are created on pipeline
             //parameter :- None
             //==============================================================================================
-            this.kmsWebrtcHelper.connectEndpoints();
+            Object.keys(sessionStore[meetingId].participants).map((fromParticipantId) => {
+                Object.keys(sessionStore[meetingId].participants).map((toParticipantId) => {
+                    if (fromParticipantId !== toParticipantId) {
+                        this.kmsWebrtcHelper.connectEndpoints(sessionStore[meetingId].participants[fromParticipantId].webrtcEndpoints,
+                            sessionStore[meetingId].participants[toParticipantId].webrtcEndpoints);
+                    }
+                });
+            });
+
 
             //=============================================================================================
             //generateSdpAnswer() :- Function of class kmsWebrtcHelper

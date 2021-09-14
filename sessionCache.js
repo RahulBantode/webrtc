@@ -37,7 +37,7 @@ class SessionsCache {
         userDetails.userName = userName;
         userDetails.sdpOffer = sdpOffer;
 
-        // console.log("Users data from session cache :", JSON.stringify(sessionStore));
+        console.log("Users data from session cache :", sessionStore[meetingId]);
 
     }
 
@@ -52,6 +52,7 @@ class SessionsCache {
         //console.log("webrtcpipeline from sessionCache : ", sessionStore[meetingId].webrtcPipeline);
     }
 
+    //this function is used to set the kurento client into the sessionCache.
     setKurentoClient(meetingId, kurentoClient) {
         sessionStore[meetingId].kurentoClient = kurentoClient;
     }
@@ -65,11 +66,6 @@ class SessionsCache {
     //this function is used to initialize the iceCandidateQueue for the specified user.
     initializeIceCandidateQueue(meetingId, userId) {
         sessionStore[meetingId].participants[userId].iceCandidateQueue = [];
-    }
-
-    setSdpOfferNull(meetingId, userId) {
-        sessionStore[meetingId].participants[userId].sdpOffer = null;
-        console.log("SDP offer : ", sessionStore[meetingId].participants);
     }
 
     //reponsible for set the user data.
@@ -87,10 +83,9 @@ class SessionsCache {
         return userList;
     }
 
+    //this function is used to delete webrtcendpoint,sdpoffer, pipeline,kurentoclient from sessionCache
     cleanupKMSWebRTCData(meetingId) {
         let sessionDetails = sessionStore[meetingId];
-
-        console.log("********************************************Cache cleanup********************************************");
         if (sessionDetails.webrtcPipeline) {
 
             Object.keys(sessionDetails.participants).forEach(participantId => {
@@ -99,7 +94,7 @@ class SessionsCache {
             });
             delete sessionDetails.webrtcPipeline;
             delete sessionDetails.kurentoClient;
-            console.log(`sesscionCache for ${meetingId} :- ${JSON.stringify(sessionDetails)}`);
+            console.log("All the resources are deleted from sessionCache");
         }
     }
 }

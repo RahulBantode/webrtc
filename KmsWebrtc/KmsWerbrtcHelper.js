@@ -4,7 +4,6 @@ const SessionCache = require("../sessionCache");
 
 class KmsPipeline {
     sessionCache;
-    endpointList = [];
 
     constructor() {
         this.sessionCache = new SessionCache();
@@ -59,8 +58,6 @@ class KmsPipeline {
                     this.sessionCache.setMediaPipeline(meetingId, webrtcPipeline);
                     this.sessionCache.setKurentoClient(meetingId, kurentoClient);
 
-                    console.log("********************* Users data from session cache :", JSON.stringify(sessionStore[meetingId]));
-
                     //==============================================================================================
                     //This piece of code used to create the endpoints for each user after creating of mediaPipeline.
                     //==============================================================================================
@@ -96,9 +93,6 @@ class KmsPipeline {
                 //this function used for save the endpoint to the sessionCache
                 //==============================================================================
                 this.sessionCache.setUserEndpoints(meetingId, userId, endPoint);
-
-                //endpoinList is the array which maintain the endpoints which is required for connecting the endpoints.
-                this.endpointList.push(endPoint);
 
                 //==================================================================================================
                 //This block of statement is used to add the ice candidate of users to the kms endpoints.
@@ -141,21 +135,14 @@ class KmsPipeline {
     //==================================================================================================
     //connectEndpoints() :- this function is used for connecting users endpoints with each others.
     //==================================================================================================
-    connectEndpoints() {
+    connectEndpoints(endpoint1, endpoint2) {
         console.log("STEP : 8 (connect endpoints)");
 
-        this.endpointList[0].connect(this.endpointList[1], (error) => {
+        endpoint1.connect(endpoint2, (error) => {
             if (error) {
-                console.log(error)
+                console.log("Error in connecting endpoints 0 to 1:", error);
             }
             console.log("Agent : Enpoint is connected");
-        });
-
-        this.endpointList[1].connect(this.endpointList[0], (error) => {
-            if (error) {
-                console.log(error);
-            }
-            console.log("Users : Endpoint is connected ");
         });
 
     }//connect endpoint function completed
@@ -189,9 +176,9 @@ class KmsPipeline {
 
         let sessionStore = this.sessionCache.getSessionStore();
         let sdpOffer = sessionStore[meetingId].participants[userId].sdpOffer;
-        //console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
+
         sessionStore[meetingId].participants[userId].webrtcEndpoints.processOffer(sdpOffer.sdp, callback);
-        //console.log("Endpoints from the sdp answer : ", sessionStore[meetingId].participants[userId].webrtcEndpoints);
+
         //==================================================================================================
         //gatherCandidate - this is inbuilt function called after processOffer function.
         //==================================================================================================
@@ -203,18 +190,19 @@ class KmsPipeline {
 
     }
 
+    //==================================================================================================
+    // releaseKMSResources :- this function is used to release all the kms resources
+    //==================================================================================================
     releaseKMSResources(sessionDetails) {
-
-        console.log("********************************************Cleaning up KMS Resources********************************************");
         if (sessionDetails.webrtcPipeline) {
 
             Object.keys(sessionDetails.participants).forEach(participantId => {
                 sessionDetails.participants[participantId].webrtcEndpoints.release();
                 sessionDetails.participants[participantId].iceCandidateQueue = [];
             });
-
             sessionDetails.webrtcPipeline.release();
-            sessionDetails.kurentoClient.close();
+
+            console.log("All the resourcess are released on kms server");
         }
     }
 }
