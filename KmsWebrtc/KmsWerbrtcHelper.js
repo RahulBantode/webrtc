@@ -194,6 +194,7 @@ class KmsPipeline {
     // releaseKMSResources :- this function is used to release all the kms resources
     //==================================================================================================
     releaseKMSResources(sessionDetails) {
+        console.log("**************** CAll END ****************");
         if (sessionDetails.webrtcPipeline) {
 
             Object.keys(sessionDetails.participants).forEach(participantId => {

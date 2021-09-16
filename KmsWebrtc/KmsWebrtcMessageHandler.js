@@ -48,13 +48,13 @@ class KmsWebrtcMessageHandler {
         var sessionStore = this.sessionCache.getSessionStore();
         var meetingId = this.sessionCache.getMeetingId();
 
-        //========================================================================================
-        //saveUserDetails() - Funnction of class sessionCache 
-        //working - Function is used to store the information of joined users to the room
-        //=========================================================================================
-        this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
 
         if (messege.callStatus == 1) {
+            //========================================================================================
+            //saveUserDetails() - Funnction of class sessionCache 
+            //working - Function is used to store the information of joined users to the room
+            //=========================================================================================
+            this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
 
             //=====================================================================================
             //createPipeline() :- Function of class kmsWebrtcHelper
@@ -115,6 +115,7 @@ class KmsWebrtcMessageHandler {
         //else part consist working if call are rejected
         //================================================================================================
         else {
+            console.log("***************CALL REJECTED***************");
             const rejectCall = {
                 type: "_KMS_CALL_RESPONSE",
                 data: {
@@ -167,7 +168,6 @@ class KmsWebrtcMessageHandler {
         let sessionStore = this.sessionCache.getSessionStore();
         let meetingId = messege.meetingId;
 
-        console.log("********************************************[ KMS CALL END  (start)]********************************************");
         this.kmsWebrtcHelper.releaseKMSResources(sessionStore[meetingId]);
         this.sessionCache.cleanupKMSWebRTCData(meetingId);
 
@@ -181,7 +181,6 @@ class KmsWebrtcMessageHandler {
             }
         }
         socket.broadcast.emit("message", endCall);
-        console.log("********************************************[ KMS CALL END (end)]************************************************");
     }
 }
 

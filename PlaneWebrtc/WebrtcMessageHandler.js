@@ -21,7 +21,7 @@ class WebrtcMessageHandler {
         if (messege.meetingId) {
             //socket.to(messege.meetingId).emit("messege",emit); //
             socket.broadcast.emit("message", emitResponse);
-            console.log("Agents request : ", emitResponse);
+            console.log("Agents request : ", messege.userName);
         }
 
     }
@@ -46,9 +46,10 @@ class WebrtcMessageHandler {
                 }
             }
             socket.broadcast.emit("message", emitResponse);
-            console.log("User's response : ", emitResponse);
+            console.log("User's response : ", messege.userName);
         }//end of if
         else {
+            console.log("************** CALL REJECTED ************** ");
             const callRejected = {
                 type: "_CALL_RESPONSE",
                 data: {
@@ -57,6 +58,7 @@ class WebrtcMessageHandler {
                 }
             }
             socket.broadcast.emit("message", callRejected);
+            console.log("CAll rejected ");
         }//end of else.
     }
 
@@ -79,8 +81,7 @@ class WebrtcMessageHandler {
         }
 
         socket.broadcast.emit("message", sdpOffer);
-        console.log("Sdp offer (Agent) : ", sdpOffer);
-
+        console.log("Sdp offer (Agent) : ", messege.userName);
     }
 
     /*===========================================================================================
@@ -102,8 +103,7 @@ class WebrtcMessageHandler {
         }
 
         socket.broadcast.emit("message", sdpAnswer);
-        console.log("Sdp answer (User) : ", sdpAnswer);
-
+        console.log("Sdp answer (User) : ", messege.userName);
     }
 
     /*===========================================================================================
@@ -125,7 +125,7 @@ class WebrtcMessageHandler {
         }
 
         socket.broadcast.emit("message", iceCandidate);
-        console.log(`Sharing of iceCandidate : ${iceCandidate}`);
+        console.log(`Sharing of iceCandidate : ${iceCandidate} : of user : ${message.userName}`);
 
     }
 
@@ -137,6 +137,7 @@ class WebrtcMessageHandler {
         functionality :- this function pass the call end messege to the another users.
     ==============================================================================================*/
     handleCallEnd(message, socket, io) {
+        console.log("************** CALL END ************** ");
         const callEnd = {
             type: "_CALL_ENDED",
             data: {
@@ -147,7 +148,7 @@ class WebrtcMessageHandler {
             }
         }
         socket.broadcast.emit("message", callEnd);
-        console.log("Call is ended");
+        console.log("communication stop by user : ", message.userName);
     }
 }
 

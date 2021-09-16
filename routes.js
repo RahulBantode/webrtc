@@ -20,8 +20,4 @@ router.post("/joinmeeting", (req, res) => {
     joinMeeting.joinMeetingHandler(req, res);
 })
 
-
-
-
-
 module.exports = router;

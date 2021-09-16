@@ -8,7 +8,7 @@ const socketHandler = require("./socket");
 const http = require("http").createServer(app);
 
 app.use(cors());
-app.use("/",router);
+app.use("/", router);
 
 const io = require("socket.io")(http);
 //socket class object creation and 
@@ -17,8 +17,6 @@ const socket = new socketHandler(io);
 socket.init();
 
 
-http.listen(port,()=>{
+http.listen(port, () => {
     console.log(`server is listening on = localhost:${port}/`);
 })
-
-
