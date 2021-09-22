@@ -1,4 +1,4 @@
-Project Title :-  WebRTC Implementation of peer to peer communication
+Project Title :-  WebRTC Implementation of peer to peer communication.
 The project implements the working of webRTC technology with KMS (kurento media server) and without KMS.
 
 Installation :-
