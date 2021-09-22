@@ -1,187 +1,112 @@
-const KmsWerbrtcHelper = require("./KmsWerbrtcHelper");
-const SessionCache = require("../sessionCache");
+const KmsWerbrtcHelper = require('./KmsWerbrtcHelper');
+const SessionCache = require('../Cache/SessionCache');
 
 class KmsWebrtcMessageHandler {
-    kmsWebrtcHelper;
-    sessionCache;
+  constructor() {
+    this.kmsWebrtcHelper = new KmsWerbrtcHelper();
+  }
 
-    constructor() {
-        this.kmsWebrtcHelper = new KmsWerbrtcHelper();
-        this.sessionCache = new SessionCache();
+  /*
+  This function handle the call request from one user and forward this call request to another user 
+  */
+  handleKmsCallRequest(message, socket) {
+    console.log('STEP :- 3 (generate call resquest)');
+
+    const kmsCallRequestToCallee = {
+      type: '_KMS_CALL_REQUEST',
+      data: {
+        meetingId: message.meetingId,
+        userId: message.userId,
+        userName: message.userName,
+      },
+    };
+
+    //save the user details in sessionCache
+    SessionCache.saveUserDetails(message.meetingId, message.userId, message.userName, message.sdpOffer);
+
+    socket.broadcast.emit('message', kmsCallRequestToCallee);
+    console.log('STEP :- 4 (emit call request)');
+  }
+
+  /*
+  This function handle the call response and create media pipleine,endpoint,generate sdp answer and
+  respond to the another user
+  */
+  async handleKmsCallResponse(message, socket, io) {
+
+    if (message.callStatus == 1) {
+      //save the user details in sessionCache
+      SessionCache.saveUserDetails(message.meetingId, message.userId, message.userName, message.sdpOffer);
+
+      //INITIALIZE KMS COMMUNICATION (CREATE-PIPELINE,ENDPOINT / CONNECT-ENDPOINT /GENERATESDPANSWER) 
+      this.kmsWebrtcHelper.initKMSCommunication(message.meetingId, io);
+    } else {
+      console.log('***************CALL REJECTED***************');
+      const rejectCall = {
+        type: '_KMS_CALL_RESPONSE',
+        data: {
+          userId: message.userId,
+          userName: message.userName,
+          id: 'rejected',
+          message: 'This user reject the call',
+        },
+      };
+      socket.broadcast.emit('message', rejectCall);
     }
+  }
 
-    /*=====================================================================================================
-        handleKmsCallRequest - This function handle the call request of comes from agent and forward this
-                               request to the user who joined the room
-        parameter :- messege(data comes from agent) , socket , io
-    ========================================================================================================*/
-    handleKmsCallRequest(messege, socket, io) {
-        console.log("STEP :- 3 (generate call resquest)");
 
-        const emitCallRequest = {
-            type: "_KMS_CALL_REQUEST",
-            data: {
-                meetingId: messege.meetingId,
-                userId: messege.userId,
-                userName: messege.userName
-            }
-        }
+  /*
+    This function is used to handle the iceCandidate comes from each user to the server, and server pass it to the 
+    kms and kms add this IceCandidate and generate it own iceCandidate for each user and send back 
+    to the respective user 
+  */
+  handleIceCandidate(message) {
+    console.log('STEP : 13/14 (got ice Candidate from users)');
 
-        this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
-        socket.broadcast.emit("message", emitCallRequest);
+    console.log(`Received IceCandidates From user ${message.userId}`);
+    this.kmsWebrtcHelper.addIceCandidateForParticipant(message.meetingId, message.userId, message.iceCandidate);
+  }
 
-        console.log("STEP :- 4 (emit call request)");
+  /*
+    This function is used to release the pipeline, endpoints which are created for the participants
+   */
+  handleKmsEndCall(message, socket) {
+    //this releases the kms allocated resourcese
+    this.kmsWebrtcHelper.releaseKMSResources(message.meetingId);
+    //this delete resources which are stored into the sessionCache
+    SessionCache.cleanupKMSWebRTCData(message.meetingId);
 
+    const endCall = {
+      type: '_KMS_CALL_ENDED',
+      data: { ...message, message: 'Kms webrtc call ended' },
+    };
+    socket.broadcast.emit('message', endCall);
+  }
+
+  static sendSdpAnswer(participantId, kmsSdpAnswer) {
+    // if (error) {
+    //   console.log(error);
+    // } else 
+    {
+      const sdpAnswerToSend = {
+        type: '_KMS_SDP_ANSWER',
+        data: {
+          meetingId: meetingId,
+          userId: participantId,
+          userName: meetingDetails.participants[participantId].userName,
+          sdpAnswer: {
+            type: 'answer',
+            sdp: kmsSdpAnswer,
+          },
+        },
+      };
+
+      io.to(participantId).emit('message', sdpAnswerToSend);
+      console.log(`sdp answer generated for participantId ${participantId} and participantName ${sdpAnswerToSend.data.userName}`);
+      console.log('STEP : 10/11 (emit the sdp answer to each users.)');
     }
-
-
-    /*=====================================================================================================
-        handleKmsCallResponse :- This function is used perform the task after getting response from the 
-                                 users to the call, if callStatus is true then , all the function are called
-                                 under the if condition.
-        parameter :- messege(data comes from agent) , socket , io
-    ========================================================================================================*/
-    async handleKmsCallResponse(messege, socket, io) {
-        //console.log("Call Response  : ", messege);
-
-        //this part for displaying the the keys of the sessionStore.
-        var sessionStore = this.sessionCache.getSessionStore();
-        var meetingId = this.sessionCache.getMeetingId();
-
-
-        if (messege.callStatus == 1) {
-            //========================================================================================
-            //saveUserDetails() - Funnction of class sessionCache 
-            //working - Function is used to store the information of joined users to the room
-            //=========================================================================================
-            this.sessionCache.saveUserDetails(messege.meetingId, messege.userId, messege.userName, messege.sdpOffer);
-
-            //=====================================================================================
-            //createPipeline() :- Function of class kmsWebrtcHelper
-            //working :- function is used to create the pipeline on the kms server
-            //parameter :- meetingId and io (socket object)
-            //======================================================================================
-            await this.kmsWebrtcHelper.createPipeline(meetingId, io);
-
-            //=============================================================================================
-            //connectEndpoints() :- Function of class kmsWebrtcHelper
-            //working :- function is used to connect all the users endpoints which are created on pipeline
-            //parameter :- None
-            //==============================================================================================
-            Object.keys(sessionStore[meetingId].participants).map((fromParticipantId) => {
-                Object.keys(sessionStore[meetingId].participants).map((toParticipantId) => {
-                    if (fromParticipantId !== toParticipantId) {
-                        this.kmsWebrtcHelper.connectEndpoints(sessionStore[meetingId].participants[fromParticipantId].webrtcEndpoints,
-                            sessionStore[meetingId].participants[toParticipantId].webrtcEndpoints);
-                    }
-                });
-            });
-
-
-            //=============================================================================================
-            //generateSdpAnswer() :- Function of class kmsWebrtcHelper
-            //working :- process the offer of users which commes from each user and then generate the sdp
-            //           answer and send back it to the respective user
-            //parameter :- userId , meetingId , one callback (error,kmsSdpAnswer)
-            //=============================================================================================
-            Object.keys(sessionStore[meetingId].participants).forEach(userId => {
-                this.kmsWebrtcHelper.generateSdpAnswer(userId, meetingId, (error, kmsSdpAnswer) => {
-                    if (error) {
-                        console.log(error);
-                    }
-                    const sdpAnswer = {
-                        type: "_KMS_SDP_ANSWER",
-                        data: {
-                            meetingId: meetingId,
-                            userId: userId,
-                            userName: sessionStore[meetingId].participants[userId].userName,
-                            sdpAnswer: {
-                                type: 'answer',
-                                sdp: kmsSdpAnswer
-                            }
-                        }
-                    }
-
-                    io.to(userId).emit("message", sdpAnswer);
-                    console.log("sdp answer (user Id ): ", userId, "userName : ", sdpAnswer.data.userName);
-
-                    console.log("STEP : 10/11 (emit the sdp answer to each users.)");
-
-                });//endof generatesdpanswer            
-
-            });//end of the foreach
-        }//end of main if
-        //================================================================================================
-        //else part consist working if call are rejected
-        //================================================================================================
-        else {
-            console.log("***************CALL REJECTED***************");
-            const rejectCall = {
-                type: "_KMS_CALL_RESPONSE",
-                data: {
-                    userId: messege.userId,
-                    userName: messege.userName,
-                    id: "rejected",
-                    messege: "This user reject the call"
-                }
-            }
-            socket.broadcast.emit("message", rejectCall);
-        }
-    }
-
-    /*=====================================================================================================
-        handleIceCandidate() :- This function is used to handle the iceCandidate comes from each user to the
-                                server, and server pass it to the kms and kms add this IceCandidate and 
-                                generate it own iceCandidate for each user and send back to the each user
-         parameter :- messege(data comes from agent) , socket , io                       
-    =======================================================================================================*/
-    handleIceCandidate(messege) {
-        console.log("STEP : 13/14 (got ice Candidate from users)");
-
-        console.log(`From users to kms : UserId : ${messege.userId} : IceCandidate : ${messege.iceCandidate}`);
-        let sessionStore = this.sessionCache.getSessionStore();
-
-        if (!sessionStore[messege.meetingId].participants[messege.userId].iceCandidateQueue) {
-            //================================================================================================
-            //initializeCandidateQueue() :- Function is from sessionCache class and is used to initialize
-            //                              iceCandidateQueue for each joined user
-            //parameter :- meetingId,userId
-            //================================================================================================
-            this.sessionCache.initializeIceCandidateQueue(messege.meetingId, messege.userId);
-        }
-
-        //================================================================================================
-        //initializeCandidateQueue() :- Function is from kmsWebrtcHelper class and is used to add the 
-        //                              icecandidate to the user's endpoint.
-        //parameter :- meetingId,userId,iceCandidate
-        //================================================================================================
-        this.kmsWebrtcHelper.onIceCandidate(messege.meetingId, messege.userId, messege.iceCandidate);
-    }
-
-
-    /*=====================================================================================================
-        handleKmsEndCall() :- This function is used to release the pipeline, endpoints and participants
-                              who are joined to the meeting, on the end call action.
-         parameter :- messege(data comes from agent) , socket , io                       
-    =======================================================================================================*/
-    handleKmsEndCall(messege, socket, io) {
-        let sessionStore = this.sessionCache.getSessionStore();
-        let meetingId = messege.meetingId;
-
-        this.kmsWebrtcHelper.releaseKMSResources(sessionStore[meetingId]);
-        this.sessionCache.cleanupKMSWebRTCData(meetingId);
-
-        const endCall = {
-            type: "_KMS_CALL_ENDED",
-            data: {
-                meetingId: messege.meetingId,
-                userId: messege.userId,
-                userName: messege.userName,
-                messege: "Kms webrtc call ended"
-            }
-        }
-        socket.broadcast.emit("message", endCall);
-    }
+  }
 }
 
 module.exports = KmsWebrtcMessageHandler;
