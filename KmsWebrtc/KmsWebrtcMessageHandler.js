@@ -34,24 +34,32 @@ class KmsWebrtcMessageHandler {
   */
   async handleKmsCallResponse(message, socket, io) {
 
+    const kmsCallResponse = {
+      type: '_KMS_CALL_RESPONSE',
+      data: {
+        userId: message.userId,
+        userName: message.userName,
+      }
+    }
+
     if (message.callStatus == 1) {
       //save the user details in sessionCache
       SessionCache.saveUserDetails(message.meetingId, message.userId, message.userName, message.sdpOffer);
 
+      kmsCallResponse.data.id = "accepted";
+      kmsCallResponse.data.status = "User accepted the call";
+
+      socket.broadcast.emit('message', kmsCallResponse);
+
       //INITIALIZE KMS COMMUNICATION (CREATE-PIPELINE,ENDPOINT / CONNECT-ENDPOINT /GENERATESDPANSWER) 
       this.kmsWebrtcHelper.initKMSCommunication(message.meetingId, io);
+
     } else {
       console.log('***************CALL REJECTED***************');
-      const rejectCall = {
-        type: '_KMS_CALL_RESPONSE',
-        data: {
-          userId: message.userId,
-          userName: message.userName,
-          id: 'rejected',
-          message: 'This user reject the call',
-        },
-      };
-      socket.broadcast.emit('message', rejectCall);
+
+      kmsCallResponse.data.id = "rejected";
+      kmsCallResponse.data.status = "User declined the call"
+      socket.broadcast.emit('message', kmsCallResponse);
     }
   }
 
@@ -84,29 +92,6 @@ class KmsWebrtcMessageHandler {
     socket.broadcast.emit('message', endCall);
   }
 
-  static sendSdpAnswer(participantId, kmsSdpAnswer) {
-    // if (error) {
-    //   console.log(error);
-    // } else 
-    {
-      const sdpAnswerToSend = {
-        type: '_KMS_SDP_ANSWER',
-        data: {
-          meetingId: meetingId,
-          userId: participantId,
-          userName: meetingDetails.participants[participantId].userName,
-          sdpAnswer: {
-            type: 'answer',
-            sdp: kmsSdpAnswer,
-          },
-        },
-      };
-
-      io.to(participantId).emit('message', sdpAnswerToSend);
-      console.log(`sdp answer generated for participantId ${participantId} and participantName ${sdpAnswerToSend.data.userName}`);
-      console.log('STEP : 10/11 (emit the sdp answer to each users.)');
-    }
-  }
 }
 
 module.exports = KmsWebrtcMessageHandler;
